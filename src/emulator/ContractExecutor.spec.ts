@@ -22,6 +22,6 @@ describe('ContractExecutor', () => {
             body: comment('Hello')
         }));
 
-        await system.tick();
+        await system.run();
     });
 });

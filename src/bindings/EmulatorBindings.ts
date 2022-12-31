@@ -60,6 +60,21 @@ export type TransactionArgs = {
     randomSeed: Buffer;
 };
 
+export type TransactionResult = {
+    output:
+    | {
+        success: true;
+        transaction: string;
+        shard_account: string;
+        vm_log: string;
+        actions: string | null;
+    }
+    | {
+        success: false;
+        error: string;
+    };
+    logs: string;
+}
 export class EmulatorBindings {
 
     #lock = new AsyncLock();
@@ -98,7 +113,7 @@ export class EmulatorBindings {
             ignore_chksig: false,
         };
 
-        return await this.#execute('_emulate', [
+        let res = await this.#execute('_emulate', [
             args.config.toBoc().toString('base64'),
             args.libs ? args.libs.toBoc().toString('base64') : 0,
             args.verbosity,
@@ -106,6 +121,8 @@ export class EmulatorBindings {
             args.message.toBoc().toString('base64'),
             JSON.stringify(params)
         ]);
+
+        return JSON.parse(res) as TransactionResult;
     }
 
     #execute = async (name: string, args: (string | number)[]) => {

@@ -85,7 +85,11 @@ export class ContractSystem {
         throw new Error('Not implemented');
     }
 
-    async tick() {
+    async sendInternal(src: Message) {
+        this.#pending.push(src);
+    }
+
+    async run() {
         for (let p of this.#pending) {
             if (p.info.type === 'internal') {
                 let key = p.info.dest.toString({ testOnly: true });
