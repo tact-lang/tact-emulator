@@ -1,6 +1,7 @@
-import { Address, Cell, Message, MessageRelaxed } from "ton-core";
+import { Address, Cell, comment, Contract, ContractProvider, external, Message, openContract, toNano } from "ton-core";
 import { EmulatorBindings } from "../bindings/EmulatorBindings";
 import { defaultConfig } from "../utils/defaultConfig";
+import { Maybe } from "../utils/maybe";
 import { ContractExecutor } from "./ContractExecutor";
 
 export class ContractSystem {
@@ -48,56 +49,110 @@ export class ContractSystem {
         this.#contracts = new Map();
     }
 
-    async register(executor: ContractExecutor) {
-        let key = executor.address.toString({ testOnly: true });
-        if (this.#contracts.has(key)) {
-            throw new Error(`Contract ${key} already exists`);
+    contract(contract: Address) {
+        let key = contract.toString({ testOnly: true });
+        let executor = this.#contracts.get(key);
+        if (!executor) {
+            executor = ContractExecutor.createEmpty(contract, this);
+            this.#contracts.set(key, executor);
         }
-        this.#contracts.set(key, executor);
+        return executor;
     }
 
-    async send(from: Address, msg: MessageRelaxed) {
-
-        // Un-relax internal message
-        if (msg.info.type === 'internal') {
-            let converted: Message = {
-                info: {
-                    type: 'internal',
-                    src: from,
-                    dest: msg.info.dest,
-                    value: msg.info.value,
-                    bounce: msg.info.bounce,
-                    bounced: false,
-                    createdLt: 0n,
-                    createdAt: this.#now,
-                    ihrDisabled: msg.info.ihrDisabled,
-                    ihrFee: msg.info.ihrFee,
-                    forwardFee: msg.info.forwardFee
-                },
-                init: msg.init,
-                body: msg.body
-            }
-            this.#pending.push(converted);
-            return;
-        }
-
-        // Un-relax external message
-        throw new Error('Not implemented');
+    provider(contract: Contract) {
+        return this.#provider(contract.address, contract.init && contract.init.code && contract.init.data ? contract.init : null);
     }
 
-    async sendInternal(src: Message) {
-        this.#pending.push(src);
+    open<T extends Contract>(src: T) {
+        return openContract(src, (params) => this.#provider(params.address, params.init));
     }
 
     async run() {
         for (let p of this.#pending) {
             if (p.info.type === 'internal') {
-                let key = p.info.dest.toString({ testOnly: true });
-                let executor = this.#contracts.get(key);
-                console.warn(`[ContractSystem] Tick: ${key} ${executor ? 'found' : 'not found'}`)
-                if (executor) {
-                    await executor.receive(p);
+                let messages = await this.contract(p.info.dest).receive(p);
+                for (let m of messages) {
+                    this.#send(m);
                 }
+            }
+        }
+    }
+
+    #send = (src: Message) => {
+        if (src.info.type !== 'external-out') {
+            this.#pending.push(src);
+        }
+    }
+
+    #provider(address: Address, init: { code: Cell, data: Cell } | null): ContractProvider {
+        let executor = this.contract(address);
+        return {
+            getState: async () => {
+                return executor.state;
+            },
+            get: async (name, args) => {
+                let res = await executor.get(name, args);
+                if (!res.success) {
+                    throw Error(res.error);
+                }
+                return { stack: res.stack! };
+            },
+            internal: async (via, message) => {
+
+                // Resolve if init needed
+                let state = executor.state;
+                let neededInit: { code?: Maybe<Cell>, data?: Maybe<Cell> } | undefined = undefined;
+                if (state.state.type !== 'active' && init) {
+                    neededInit = init;
+                }
+
+                // Resolve bounce
+                let bounce = true;
+                if (message.bounce !== null && message.bounce !== undefined) {
+                    bounce = message.bounce;
+                }
+
+                // Resolve value
+                let value: bigint;
+                if (typeof message.value === 'string') {
+                    value = toNano(message.value);
+                } else {
+                    value = message.value;
+                }
+
+                // Resolve body
+                let body: Cell | null = null;
+                if (typeof message.body === 'string') {
+                    body = comment(message.body);
+                } else if (message.body) {
+                    body = message.body;
+                }
+
+                // Send internal message
+                await via.send({
+                    to: address,
+                    value,
+                    bounce,
+                    sendMode: message.sendMode,
+                    init: neededInit,
+                    body
+                });
+            },
+            external: async (msg) => {
+
+                // Resolve if init needed
+                let state = executor.state;
+                let neededInit: { code?: Maybe<Cell>, data?: Maybe<Cell> } | undefined = undefined;
+                if (state.state.type !== 'active' && init) {
+                    neededInit = init;
+                }
+
+                // Send message
+                this.#send(external({
+                    to: address,
+                    init: neededInit,
+                    body: msg
+                }));
             }
         }
     }

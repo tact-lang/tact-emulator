@@ -1,4 +1,4 @@
-import { Address, beginCell, Cell, comment, internal, toNano } from "ton-core";
+import { beginCell, Cell } from "ton-core";
 import { ContractExecutor } from "./ContractExecutor";
 import { ContractSystem } from "./ContractSystem";
 
@@ -15,13 +15,5 @@ describe('ContractExecutor', () => {
         }, system);
         let res = await contract.get('hello', [{ type: 'int', value: 12312312n }]);
         expect(res!.stack?.readNumber()).toBe(12312313);
-
-        system.send(new Address(0, Buffer.alloc(32)), internal({
-            to: contract.address,
-            value: toNano(1),
-            body: comment('Hello')
-        }));
-
-        await system.run();
     });
 });

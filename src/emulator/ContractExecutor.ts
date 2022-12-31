@@ -1,13 +1,17 @@
 import { AsyncLock } from "teslabot";
-import { Account, Address, beginCell, Cell, loadShardAccount, loadTransaction, Message, parseTuple, storeMessage, storeShardAccount, TupleItem, TupleReader } from "ton-core";
+import { Account, Address, beginCell, Cell, ContractState, loadShardAccount, loadTransaction, Message, parseTuple, storeMessage, storeShardAccount, TupleItem, TupleReader } from "ton-core";
 import { createAccount } from "../utils/createAccount";
 import { createEmptyAccount } from "../utils/createEmptyAccount";
 import { getMethodId } from "../utils/getMethodId";
 import { ContractSystem } from "./ContractSystem";
 
+function bigIntToBuffer(v: bigint, bytes: number) {
+    return beginCell().storeUint(v, bytes * 8).endCell().beginParse().loadBuffer(bytes);
+}
+
 export class ContractExecutor {
 
-    static async createEmpty(address: Address, system: ContractSystem) {
+    static createEmpty(address: Address, system: ContractSystem) {
         return new ContractExecutor(createEmptyAccount(address), system);
     }
 
@@ -27,7 +31,50 @@ export class ContractExecutor {
         this.address = state.addr;
         this.#state = state;
         this.#balance = this.#state.storage.balance.coins;
-        this.system.register(this);
+    }
+
+    get state(): ContractState {
+        let balance = this.#balance;
+        let last: {
+            lt: bigint;
+            hash: Buffer;
+        } | null = null;
+        if (this.#last) {
+            last = {
+                lt: this.#last.lt,
+                hash: bigIntToBuffer(this.#last.hash, 32),
+            }
+        }
+        if (this.#state.storage.state.type === 'active') {
+            return {
+                balance,
+                last,
+                state: {
+                    type: 'active',
+                    code: this.#state.storage.state.state.code ? this.#state.storage.state.state.code.toBoc() : null,
+                    data: this.#state.storage.state.state.data ? this.#state.storage.state.state.data.toBoc() : null,
+                }
+            }
+        } else if (this.#state.storage.state.type === 'uninit') {
+            return {
+                balance,
+                last,
+                state: {
+                    type: 'uninit',
+                }
+            }
+        } else if (this.#state.storage.state.type === 'frozen') {
+            return {
+                balance,
+                last,
+                state: {
+                    type: 'frozen',
+                    stateHash: bigIntToBuffer(this.#state.storage.state.stateHash, 32),
+                }
+            }
+        } else {
+            throw new Error('Unknown contract state');
+        }
     }
 
     get = async (method: string | number, stack?: TupleItem[]) => {
@@ -106,12 +153,13 @@ export class ContractExecutor {
                 let shard = loadShardAccount(Cell.fromBoc(Buffer.from(res.output.shard_account, 'base64'))[0].beginParse());
                 this.#state = shard.account!;
                 this.#last = { lt: shard.lastTransactionLt, hash: shard.lastTransactionHash };
+                this.#balance = shard.account!.storage.balance.coins;
 
                 // Load transaction
                 let tx = loadTransaction(Cell.fromBoc(Buffer.from(res.output.transaction, 'base64'))[0].beginParse());
-                for (let message of tx.outMessages.values()) {
-                    this.system.sendInternal(message);
-                }
+                return tx.outMessages.values();
+            } else {
+                return [];
             }
         });
     }
