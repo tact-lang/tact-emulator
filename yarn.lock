@@ -3994,10 +3994,10 @@ toidentifier@1.0.1:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
-ton-core@>=0.29.0:
-  version "0.29.0"
-  resolved "https://registry.yarnpkg.com/ton-core/-/ton-core-0.29.0.tgz#c046ee9eb1509b550317fafda195c550b6a0193a"
-  integrity sha512-1T3pokCZT8etPRY+LatSa6vTYiy+tbl8usHtz7QoJxsi9cXvKXRDdkUckymlfoeFwcpfDYBVIn7/DTJDyj1bfg==
+ton-core@>=0.30.0:
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/ton-core/-/ton-core-0.30.0.tgz#6cf243f80992d6a223c757c2cffa1db452a69541"
+  integrity sha512-4vltBuVJFsJ/UtI6pOKu3KOy4KkWkn2dnkcOLLcbbczPj677z6HLx0afJPocXA2CQY0q3alSdPZv/Tw5FrrADA==
   dependencies:
     symbol.inspect "1.0.1"
 
