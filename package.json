@@ -48,6 +48,7 @@
     }
   },
   "dependencies": {
-    "teslabot": "^1.5.0"
+    "teslabot": "^1.5.0",
+    "zod": "^3.20.2"
   }
 }

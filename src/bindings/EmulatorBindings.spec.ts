@@ -1,7 +1,8 @@
-import { beginCell, Cell } from "ton-core";
+import { beginCell, Cell, contractAddress } from "ton-core";
+import { defaultConfig } from "../utils/defaultConfig";
 import { EmulatorBindings } from "./EmulatorBindings";
 
-const echoCode = 'te6ccgECJAEAArEAART/APSkE/S88sgLAQIBYgIDAgLLBAUCAVggIQIBIAYHAgFIERICAdQICQIBIAsMAd87ftwIddJwh+VMCDXCx/eAtDTAwFxsMABkX+RcOIB+kAiUGZvBPhhApFb4MAAji4g10nCH44m7UTQ1AH4YoEBAdcAATEBgCDXIfAWyPhCAcwBAYEBAc8Aye1U2zHg3u1E0NQB+GKBAQHXAAExAfAXgCgALCBu8tCAgAB7I+EIBzAEBgQEBzwDJ7VQCASANDgAV9KP4DlAHA4AOUAQCASAPEAC7Qg10oh10mXIMIAIsIAsY5KA28igH8izzGrAqEFqwJRVbYIIMIAnCCqAhXXGFAzzxZAFN5ZbwJTQaHCAJnIAW8CUEShqgKOEjEzwgCZ1DDQINdKIddJknAg4uLoXwOAAjG8iAcmTIW6zlgFvIlnMyegxgAAc8AjQgAgEgExQCASAaGwIBIBUWAgEgGBkB9zIcQHKAVAH8A9wAcoCUAXPFlAD+gJwAcpoI26zJW6zsY49f/APyHDwD3DwDyRus5l/8A8E8AFQBMyVNANw8A/iJG6zmX/wDwTwAVAEzJU0A3DwD+Jw8A8Cf/APAslYzJYzMwFw8A/iIW6zmH/wDwHwAQHMlDFw8A/iyQGAXACU+EFvJBAjXwN/AnCAQlhtbfAQgAAT7AAALMgBzxbJgAC0f8gBlHAByx/ebwABb4xtb4wB8ArwCIAIBIBwdAgEgHh8AGRwAcjMAQGBAQHPAMmAARQxcMgBlHAByx/ebwABb4xtb4yLdIZWxsbywgjwCgHwCvAJgAAk8BPwEYAAJPAS8BGACASAiIwAnuDYu1E0NQB+GKBAQHXAAExAfAVgACbWrHgKQAE23ejBOC52Hq6WVz2PQnYc6yVCjbNBOE7rGpaVsj5ZkWnXlv74sRzA=';
+const echoCode = 'te6ccgECIgEAAoYAART/APSkE/S88sgLAQIBYgIDAgLLBAUCAVgeHwIBIAYHAgFIFBUCASAICQIBIA0OAgFICgsAI/N5EA5MmQt1nLALeRLOZk9BjAHfO37cCHXScIflTAg1wsf3gLQ0wMBcbDAAZF/kXDiAfpAIlBmbwT4YQKRW+DAAI4uINdJwh+OJu1E0NQB+GKBAQHXAAExAYAg1yHwFMj4QgHMAQGBAQHPAMntVNsx4N7tRNDUAfhigQEB1wABMQHwFYAwACwgbvLQgIAAeyPhCAcwBAYEBAc8Aye1UALvRBrpRDrpMuQYQARYQBYxyUBt5FAP5FnmNWBUILVgSiq2wQQYQBOEFUBCuuMKBnniyAKbyy3gSmg0OEATOQAt4EoIlDVAUcJGJnhAEzqGGgQa6UQ66TJOBBxcXQvgcAgEgDxAAFVlH8BygDgcAHKAIAgEgERIB9zIcQHKAVAH8A1wAcoCUAXPFlAD+gJwAcpoI26zJW6zsY49f/ANyHDwDXDwDSRus5l/8A0E8AFQBMyVNANw8A3iJG6zmX/wDQTwAVAEzJU0A3DwDeJw8A0Cf/ANAslYzJYzMwFw8A3iIW6zmH/wDQHwAQHMlDFw8A3iyQGATACU+EFvJBAjXwN/AnCAQlhtbfAOgAAT7AAIBIBYXAgFIHB0CASAYGQIBIBobAAsyAHPFsmAALR/yAGUcAHLH95vAAFvjG1vjAHwCPAHgABkcAHIzAEBgQEBzwDJgAAUMaSAACTwEfAPgAAk8BDwD4AIBICAhACe4Ni7UTQ1AH4YoEBAdcAATEB8BOAAJtaseAlAATbd6ME4LnYerpZXPY9CdhzrJUKNs0E4TusalpWyPlmRadeW/vixHMA==';
 
 describe('EmulatorBindings', () => {
     it('should create bindings', async () => {
@@ -11,7 +12,21 @@ describe('EmulatorBindings', () => {
             .storeInt(0, 257)
             .endCell();
         let bindings = new EmulatorBindings();
-        let res = await bindings.runGetMethod(code, data, 115554, [{ type: 'slice', cell: beginCell().storeStringTail('Steve').endCell() }]);
-        console.warn(res);
+        let res = await bindings.runGetMethod({
+            verbosity: 0,
+            code,
+            data,
+            address: contractAddress(0, { code, data }),
+            config: defaultConfig,
+            methodId: 115554, args: [{ type: 'int', value: 1n }],
+            balance: 0n,
+            gasLimit: 0n,
+            unixtime: 0,
+            randomSeed: Buffer.alloc(32)
+        });
+        expect(res.output.success).toBe(true);
+        if (res.output.success) {
+            expect(res.output.stack).toMatchSnapshot();
+        }
     });
 });

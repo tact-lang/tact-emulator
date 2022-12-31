@@ -1,8 +1,8 @@
 import { AsyncLock } from "teslabot";
-import { Address, beginCell, Cell, contractAddress, crc16, serializeTuple, storeShardAccount, TupleItem } from "ton-core";
+import { Address, Cell, serializeTuple, TupleItem } from "ton-core";
 
 // WASM bindings
-const createModule: (options: { wasmBinary: Buffer; }) => Promise<any> = require(__dirname + '/../../wasm/emulator-emscripten');
+const createModule: (options: any) => Promise<any> = require(__dirname + '/../../wasm/emulator-emscripten');
 const wasmBinaryPack = require(__dirname + '/../../wasm/emulator-emscripten.wasm.js');
 const wasmBinary = Buffer.from(wasmBinaryPack.wasmBinary, 'base64');
 
@@ -16,96 +16,107 @@ const writeToCString = (mod: any, data: string): Pointer => {
 };
 const readFromCString = (mod: any, pointer: Pointer): string => mod.UTF8ToString(pointer);
 
+// const defaultConfig = Cell.fromBoc(Buffer.from('"te6cckECcQEABW4AAgPNQAgBAgHOBQIBAUgDASsSY2CBqmNgiLIAAQABEAAAAAAAAADABACc0HOOgSeKR9NK7QvAShWEclTKIiT7KeN5YCq4i54HKwIneLCELpUQAAAAAAAAABUmyLDUSVB+cjV8cixVpAvtnckT5vUz9dfl85TM5VefAQFIBgErEmNgeqJjYIGqAAEAARAAAAAAAAAAwAcAnNBzjoEninFgk152x5e4P2obeffAtRXXbENLO/wHPAXk6o16jdMSEAAAAAAAAADXRh/1XRFatoIzSUoCBNvmoi70eMphk2KbS9TlOhR0JwIBIC8JAgEgHQoCASAYCwIBIBMMAQFYDQEBwA4CAWIQDwBBv2ZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZnAgFiEhEAQb6PZMavv/PdENi6Zwd5CslnDVQPN6lEiwM3uqalqSrKyAAD31ACASAWFAEBIBUAPtcBAwAAA+gAAD6AAAAAAwAAAAgAAAAEACAAAAAgAAABASAXACTCAQAAAPoAAAD6AAAVfAAAAAcCAUgbGQEBIBoAQuoAAAAAAA9CQAAAAAAD6AAAAAAAAYagAAAAAYAAVVVVVQEBIBwAQuoAAAAAAJiWgAAAAAAnEAAAAAAAD0JAAAAAAYAAVVVVVQIBICceAgEgIh8CASAgIAEBICEAUF3DAAIAAAAIAAAAEAAAwwABhqAAB6EgAA9CQMMAAAPoAAATiAAAJxACASAlIwEBICQAlNEAAAAAAAAD6AAAAAAAD0JA3gAAAAAD6AAAAAAAAAAPQkAAAAAAAA9CQAAAAAAAACcQAAAAAACYloAAAAAABfXhAAAAAAA7msoAAQEgJgCU0QAAAAAAAAPoAAAAAACYloDeAAAAACcQAAAAAAAAAA9CQAAAAAAAmJaAAAAAAAAAJxAAAAAAAJiWgAAAAAAF9eEAAAAAADuaygACASAqKAEBSCkATdBmAAAAAAAAAAAAAAAAgAAAAAAAAPoAAAAAAAAB9AAAAAAAA9CQQAIBIC0rAQEgLAAxYJGE5yoAByOG8m/BAABgkYTnKgAAADAACAEBIC4ADAPoAGQAAQIBIGMwAgEgPTECASA3MgIBIDUzAQEgNAAgAAAHCAAABdwAAAJYAAABLAEBIDYAFGtGVT8QBDuaygACASA6OAEBIDkAFRpRdIdugAEBIB9IAQEgOwEBwDwAt9BTMattNoAAkHAAQx3ZAu+VowKbp+ICJmhD5GEorXlHxC3H6wE6MfljTuTBTbWk4gs+NaYDgOTAD+ixkmRV+9aOm8QUXzkDPYIEZQAAAAAP////+AAAAAAAAAAEAgEgTD4CASBDPwEBIEACApFCQQAqNgQHBAIATEtAATEtAAAAAAIAAAPoACo2AgMCAgAPQkAAmJaAAAAAAQAAAfQBASBEAgEgR0UCCbf///BgRl8AAfwCAtlKSAIBYklTAgEgXV0CASBYSwIBzmBgAgEgYU0BASBOAgPNQFBPAAOooAIBIFhRAgEgVVICASBUUwAB1AIBSGBgAgEgV1YCASBbWwIBIFtdAgEgX1kCASBcWgIBIF1bAgEgYGACASBeXQABSAABWAIB1GBgAAEgAQEgYgAaxAAAAAEAAAAAAAAALgIBIGlkAQH0ZQEBwGYCASBoZwAVv////7y9GpSiABAAFb4AAAO8s2cNwVVQAgEgbGoBAUhrAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBIG9tAQEgbgBAMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMBASBwAEBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVaNaat0="', 'base64'))[0];
+
+export type GetMethodArgs = {
+    verbosity: number,
+    address: Address,
+    code: Cell,
+    data: Cell,
+    balance: bigint,
+    unixtime: number,
+    randomSeed: Buffer,
+    gasLimit: bigint,
+    methodId: number,
+    args: TupleItem[],
+    config: Cell,
+};
+
+export type GetMethodResult = {
+    logs: string;
+    output:
+    | {
+        success: true;
+        stack: string;
+        gas_used: string;
+        vm_exit_code: number;
+        vm_log: string;
+        missing_library: string | null;
+    }
+    | {
+        success: false;
+        error: string;
+    };
+};
+
+export type TransactionArgs = {
+    config: Cell,
+    libs: Cell | null,
+    verbosity: number,
+    shardAccount: Cell,
+    message: Cell,
+    now: number;
+    lt: bigint;
+    randomSeed: Buffer;
+};
+
 export class EmulatorBindings {
 
     #lock = new AsyncLock();
     #module: any = null;
 
-    async runGetMethod(code: Cell, data: Cell, name: number, args: TupleItem[]) {
-        let config = Cell.EMPTY;
-        let stack = serializeTuple(args);
-        let address = contractAddress(0, { code, data });
+    async runGetMethod(args: GetMethodArgs) {
+
+        // Serialize args
+        let stack = serializeTuple(args.args);
+
+        // Prepare params
         const params /*: GetMethodInternalParams */ = {
-            code: code.toBoc().toString('base64'),
-            data: data.toBoc().toString('base64'),
-            verbosity: 'INFO',
+            code: args.code.toBoc().toString('base64'),
+            data: args.data.toBoc().toString('base64'),
+            verbosity: args.verbosity,
             libs: '',
-            address: address.toRawString(),
-            unixtime: Math.floor(Date.now() / 1000),
-            balance: 0n.toString(),
-            rand_seed: new Uint8Array(32),
-            gas_limit: 0,
-            method_id: name,
+            address: args.address.toRawString(),
+            unixtime: args.unixtime,
+            balance: args.balance.toString(),
+            rand_seed: args.randomSeed.toString('hex'),
+            gas_limit: args.gasLimit.toString(),
+            method_id: args.methodId,
         };
-        console.warn(params);
 
-        return await this.#execute('_run_get_method', [JSON.stringify(params), stack.toBoc().toString('base64'), config.toBoc().toString('base64')]);
-        // return await this.#lock.inLock(async () => {
+        // Execute
+        let res = await this.#execute('_run_get_method', [JSON.stringify(params), stack.toBoc().toString('base64'), args.config.toBoc().toString('base64')]);
 
-        //     // Load module
-        //     if (!this.#module) {
-        //         this.#module = await createModule({ wasmBinary });
-        //     }
-        //     let module = this.#module;
-
-        //     // let account = storeShardAccount({
-        //     //     lastTransactionHash: 0n,
-        //     //     lastTransactionLt: 0n,
-        //     //     account: {
-        //     //         addr: Address.parse(''),
-        //     //         storageStats: {
-        //     //             used: {
-        //     //                 bits: 0n,
-        //     //                 cells: 0n,
-        //     //                 publicCells: 0n,
-        //     //             },
-        //     //             lastPaid: 0,
-        //     //             duePayment: null,
-        //     //         },
-        //     //         storage: {
-        //     //             lastTransLt: 0n,
-        //     //             balance: {
-        //     //                 coins: 0n,
-        //     //                 other: null,
-        //     //             },
-        //     //             state: {
-        //     //                 type: "active",
-        //     //                 state: {
-        //     //                     splitDepth: null,
-        //     //                     special: null,
-        //     //                     code,
-        //     //                     data,
-        //     //                     libraries: null,
-        //     //                 }
-        //     //             },
-        //     //         },
-        //     //     }
-        //     // });
-        //     // beginCell().store(account).endCell();
-
-        //     const params /*: GetMethodInternalParams */ = {
-        //         code: code.toBoc().toString(),
-        //         data: data.toBoc().toString(),
-        //         verbosity: extraParams.verbosity ?? EmulatorVerbosityLevel.INFO,
-        //         libs: '',
-        //         address: (extraParams.address ?? ZERO_ADDRESS).toString('raw'),
-        //         unixtime: Math.floor(Date.now() / 1000),
-        //         balance: 0n,
-        //         rand_seed: new Uint8Array(32),
-        //         gas_limit: 0,
-        //         method_id: typeof method === 'number' ? method : (crc16xmodem(method) & 0xffff) | 0x10000,
-        //     };
-
-        //     console.warn(module);
-        // });
+        return JSON.parse(res) as GetMethodResult;
     }
 
-    #execute = async (name: string, args: string[]) => {
+    async transaction(args: TransactionArgs) {
+        const params = {
+            utime: args.now,
+            lt: args.lt.toString(),
+            rand_seed: args.randomSeed.toString('hex'),
+            ignore_chksig: false,
+        };
+
+        return await this.#execute('_emulate', [
+            args.config.toBoc().toString('base64'),
+            args.libs ? args.libs.toBoc().toString('base64') : 0,
+            args.verbosity,
+            args.shardAccount.toBoc().toString('base64'),
+            args.message.toBoc().toString('base64'),
+            JSON.stringify(params)
+        ]);
+    }
+
+    #execute = async (name: string, args: (string | number)[]) => {
         return await this.#lock.inLock(async () => {
 
             // Load module
             if (!this.#module) {
-                this.#module = await createModule({ wasmBinary });
+                this.#module = await createModule({
+                    wasmBinary,
+                    printErr: (text: string) => console.warn(text),
+                });
             }
             let module = this.#module;
 
@@ -118,7 +129,13 @@ export class EmulatorBindings {
 
             // Execute 
             try {
-                let mappedArgs = args.map((arg) => trackPointer(writeToCString(module, arg)));
+                let mappedArgs = args.map((arg) => {
+                    if (typeof arg === 'string') {
+                        return trackPointer(writeToCString(module, arg))
+                    } else {
+                        return arg;
+                    }
+                });
                 let res = trackPointer(module[name](...mappedArgs));
                 return readFromCString(module, res);
             } finally {
