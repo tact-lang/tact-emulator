@@ -1,4 +1,5 @@
-import { beginCell, Cell } from "ton-core";
+import { beginCell, Cell, toNano } from "ton-core";
+import { testAddress } from "../utils/testAddress";
 import { ContractExecutor } from "./ContractExecutor";
 import { ContractSystem } from "./ContractSystem";
 
@@ -13,7 +14,32 @@ describe('ContractExecutor', () => {
                 .storeInt(0, 257)
                 .endCell()
         }, system);
+
+        // Get method
         let res = await contract.get('hello', [{ type: 'int', value: 12312312n }]);
-        expect(res!.stack?.readNumber()).toBe(12312313);
+        if (res.success !== true) {
+            throw new Error('get failed');
+        }
+        expect(res.stack.readNumber()).toBe(12312313);
+
+        // Receive method
+        let tx = await contract.receive({
+            info: {
+                type: 'internal',
+                src: testAddress(0, 'address-1'),
+                dest: contract.address,
+                value: { coins: toNano(1) },
+                bounce: false,
+                ihrDisabled: true,
+                createdLt: 0n,
+                createdAt: 0,
+                bounced: false,
+                ihrFee: 0n,
+                forwardFee: 0n,
+            },
+            body: beginCell()
+                .endCell()
+        });
+        console.warn(tx);
     });
 });

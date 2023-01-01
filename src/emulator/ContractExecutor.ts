@@ -9,6 +9,15 @@ function bigIntToBuffer(v: bigint, bytes: number) {
     return beginCell().storeUint(v, bytes * 8).endCell().beginParse().loadBuffer(bytes);
 }
 
+export type GetMethodResult = {
+    success: true
+    gasUsed: bigint,
+    stack: TupleReader
+} | {
+    success: false,
+    error: string
+}
+
 export class ContractExecutor {
 
     static createEmpty(address: Address, system: ContractSystem) {
@@ -77,7 +86,22 @@ export class ContractExecutor {
         }
     }
 
-    get = async (method: string | number, stack?: TupleItem[]) => {
+    get balance() {
+        return this.#balance;
+    }
+
+    set balance(v: bigint) {
+        this.#balance = v;
+        this.#state = {
+            ...this.#state,
+            storage: {
+                ...this.#state.storage,
+                balance: { ...this.#state.storage.balance, coins: v }
+            }
+        }
+    }
+
+    get = async (method: string | number, stack?: TupleItem[]): Promise<GetMethodResult> => {
         return await this.#lock.inLock(async () => {
 
             // Check contract state
@@ -124,6 +148,7 @@ export class ContractExecutor {
             // Parse result
             let resultStack = parseTuple(Cell.fromBoc(Buffer.from(result.output.stack, 'base64'))[0]);
             return {
+                success: true,
                 gasUsed: BigInt(result.output.gas_used),
                 stack: new TupleReader(resultStack)
             };
@@ -151,15 +176,16 @@ export class ContractExecutor {
             // Apply changes
             if (res.output.success) {
                 let shard = loadShardAccount(Cell.fromBoc(Buffer.from(res.output.shard_account, 'base64'))[0].beginParse());
-                this.#state = shard.account!;
+                if (shard.account) {
+                    this.#state = shard.account!;
+                    this.#balance = shard.account!.storage.balance.coins;
+                }
                 this.#last = { lt: shard.lastTransactionLt, hash: shard.lastTransactionHash };
-                this.#balance = shard.account!.storage.balance.coins;
 
                 // Load transaction
-                let tx = loadTransaction(Cell.fromBoc(Buffer.from(res.output.transaction, 'base64'))[0].beginParse());
-                return tx.outMessages.values();
+                return loadTransaction(Cell.fromBoc(Buffer.from(res.output.transaction, 'base64'))[0].beginParse());
             } else {
-                return [];
+                throw Error(res.output.error);
             }
         });
     }
