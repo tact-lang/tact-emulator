@@ -26,7 +26,7 @@ describe('ContractExecutor', () => {
         let tx = await contract.receive({
             info: {
                 type: 'internal',
-                src: testAddress(0, 'address-1'),
+                src: testAddress('address-1'),
                 dest: contract.address,
                 value: { coins: toNano(1) },
                 bounce: false,
