@@ -18,5 +18,13 @@ describe('ContractSystem', () => {
             value: toNano(1),
         });
         console.warn(inspect(await system.run(), false, 10000));
+
+        // Send second time
+        await treasure.send({
+            to: unknownAddress,
+            bounce: true,
+            value: toNano(1),
+        });
+        console.warn(inspect(await system.run(), false, 10000));
     });
 });

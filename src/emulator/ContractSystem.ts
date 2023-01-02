@@ -86,7 +86,7 @@ export class ContractSystem {
         let wallet = this.open(treasure);
 
         // Update wallet balance
-        this.contract(treasure.address).balance = toNano(1000000000000);
+        this.contract(treasure.address).balance = toNano(1000000);
 
         // Return sender
         return wallet.sender(treasure.address);
@@ -137,7 +137,9 @@ export class ContractSystem {
      */
     async run() {
         let result: Transaction[] = [];
-        for (let p of this.#pending) {
+        while (this.#pending.length > 0) {
+            let p = this.#pending.shift()!; // TODO: Better (random?) way to select pending message
+
             if (p.info.type === 'internal' || p.info.type === 'external-in') {
                 let tx = await this.contract(p.info.dest).receive(p);
                 result.push(tx);

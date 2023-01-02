@@ -138,6 +138,13 @@ export class ContractExecutor {
                 config: this.system.config
             });
 
+            if ((result as any).fail) {
+                return {
+                    success: false,
+                    error: (result as any).message
+                };
+            }
+
             // Check result
             if (!result.output.success) {
                 return {
@@ -175,18 +182,24 @@ export class ContractExecutor {
                 randomSeed: Buffer.alloc(32),
             });
 
+            if ((res as any).fail) {
+                throw new Error((res as any).message);
+            }
+
             // Apply changes
             if (res.output.success) {
-                let shard = loadShardAccount(Cell.fromBoc(Buffer.from(res.output.shard_account, 'base64'))[0].beginParse());
+                let src = Cell.fromBoc(Buffer.from(res.output.shard_account, 'base64'))[0];
+                let shard = loadShardAccount(src.beginParse());
                 if (shard.account) {
                     this.#state = shard.account!;
                     this.#balance = shard.account!.storage.balance.coins;
+                    this.#last = { lt: shard.lastTransactionLt, hash: shard.lastTransactionHash };
                 }
-                this.#last = { lt: shard.lastTransactionLt, hash: shard.lastTransactionHash };
 
                 // Load transaction
                 return loadTransaction(Cell.fromBoc(Buffer.from(res.output.transaction, 'base64'))[0].beginParse());
             } else {
+                console.warn(res.output.vm_log);
                 throw Error(res.output.error);
             }
         });

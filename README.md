@@ -16,7 +16,7 @@ import { ContractSystem } from 'ton-emulator';
 // Contract System is a virtual environment that emulates the TON blockchain
 const system = await ContractSystem.create();
 
-// Treasure is a contract that has 1bn of TONs and is a handy entry point for your smart contracts
+// Treasure is a contract that has 1m of TONs and is a handy entry point for your smart contracts
 let treasure = await system.treasure('my-treasure');
 
 // Create a random unknown address that would be treated as unititialized contract

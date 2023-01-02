@@ -72,6 +72,7 @@ export type TransactionResult = {
     | {
         success: false;
         error: string;
+        vm_log: string;
     };
     logs: string;
 }
@@ -100,7 +101,7 @@ export class EmulatorBindings {
         };
 
         // Execute
-        let res = await this.#execute('_run_get_method', [JSON.stringify(params), stack.toBoc().toString('base64'), args.config.toBoc().toString('base64')]);
+        let res = await this.execute('_run_get_method', [JSON.stringify(params), stack.toBoc().toString('base64'), args.config.toBoc().toString('base64')]);
 
         return JSON.parse(res) as GetMethodResult;
     }
@@ -113,7 +114,7 @@ export class EmulatorBindings {
             ignore_chksig: false,
         };
 
-        let res = await this.#execute('_emulate', [
+        let res = await this.execute('_emulate', [
             args.config.toBoc().toString('base64'),
             args.libs ? args.libs.toBoc().toString('base64') : 0,
             args.verbosity,
@@ -125,7 +126,7 @@ export class EmulatorBindings {
         return JSON.parse(res) as TransactionResult;
     }
 
-    #execute = async (name: string, args: (string | number)[]) => {
+    execute = async (name: string, args: (string | number)[]) => {
         return await this.#lock.inLock(async () => {
 
             // Load module

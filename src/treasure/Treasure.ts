@@ -34,7 +34,7 @@ export class TreasureContract implements Contract {
         let code = Cell.fromBoc(Buffer.from(walletCode, 'base64'))[0];
         let data = beginCell()
             .storeUint(0, 32) // Seqno
-            .storeUint(0, 32) // Wallet Id
+            .storeUint(698983191, 32) // Wallet Id
             .storeBuffer(keypair.publicKey)
             .endCell();
         this.address = contractAddress(workchain, { code, data });
@@ -44,6 +44,7 @@ export class TreasureContract implements Contract {
 
     async getSeqno(provider: ContractProvider): Promise<number> {
         let state = await provider.getState();
+        console.warn(state);
         if (state.state.type === 'active') {
             let res = await provider.get('seqno', []);
             return res.stack.readNumber();
@@ -110,7 +111,7 @@ export class TreasureContract implements Contract {
 
         // Create message
         let signingMessage = beginCell()
-            .storeUint(0, 32) // Wallet Id
+            .storeUint(698983191, 32) // Wallet Id
             .storeUint(4294967295, 32) // Timeout
             .storeUint(args.seqno, 32) // Seqno
             .storeDict(messages);
