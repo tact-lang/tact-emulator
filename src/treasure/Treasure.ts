@@ -17,9 +17,13 @@ const DictionaryMessageValue: DictionaryValue<{ sendMode: SendMode, message: Mes
     },
 }
 
-export class Treasure implements Contract {
+export type Treasure = Sender & {
+    address: Address
+}
+
+export class TreasureContract implements Contract {
     static create(workchain: number, keypair: KeyPair) {
-        return new Treasure(workchain, keypair);
+        return new TreasureContract(workchain, keypair);
     }
 
     readonly address: Address;
@@ -58,8 +62,9 @@ export class Treasure implements Contract {
         provider.external(transfer);
     }
 
-    sender(provider: ContractProvider): Sender {
+    sender(provider: ContractProvider, address: Address): Treasure {
         return {
+            address,
             send: async (args) => {
                 let seqno = await this.getSeqno(provider);
                 let transfer = this.createTransfer({

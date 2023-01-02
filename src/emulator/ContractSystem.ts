@@ -1,6 +1,6 @@
 import { Address, Cell, comment, ComputeError, Contract, ContractABI, ContractProvider, external, Message, openContract, toNano, Transaction } from "ton-core";
 import { EmulatorBindings } from "../bindings/EmulatorBindings";
-import { Treasure } from "../treasure/Treasure";
+import { Treasure, TreasureContract } from "../treasure/Treasure";
 import { defaultConfig } from "../utils/defaultConfig";
 import { Maybe } from "../utils/maybe";
 import { testKey } from "../utils/testKey";
@@ -82,14 +82,14 @@ export class ContractSystem {
 
         // Create a treasure wallet
         let key = testKey(seed);
-        let treasure = Treasure.create(workchain, key);
+        let treasure = TreasureContract.create(workchain, key);
         let wallet = this.open(treasure);
 
         // Update wallet balance
         this.contract(treasure.address).balance = toNano(1000000000000);
 
         // Return sender
-        return wallet.sender();
+        return wallet.sender(treasure.address);
     }
 
     /**
