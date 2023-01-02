@@ -44,7 +44,6 @@ export class TreasureContract implements Contract {
 
     async getSeqno(provider: ContractProvider): Promise<number> {
         let state = await provider.getState();
-        console.warn(state);
         if (state.state.type === 'active') {
             let res = await provider.get('seqno', []);
             return res.stack.readNumber();
