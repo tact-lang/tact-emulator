@@ -1,4 +1,4 @@
-import { Address, Cell, comment, Contract, ContractProvider, external, Message, openContract, toNano, Transaction } from "ton-core";
+import { Address, Cell, comment, ComputeError, Contract, ContractABI, ContractProvider, external, Message, openContract, toNano, Transaction } from "ton-core";
 import { EmulatorBindings } from "../bindings/EmulatorBindings";
 import { Treasure } from "../treasure/Treasure";
 import { defaultConfig } from "../utils/defaultConfig";
@@ -20,6 +20,7 @@ export class ContractSystem {
     #lt: bigint;
     #bindings: EmulatorBindings;
     #contracts: Map<string, ContractExecutor>;
+    #abis: Map<string, ContractABI>;
     #pending: Message[] = [];
 
     /**
@@ -68,6 +69,7 @@ export class ContractSystem {
         }
         this.#bindings = new EmulatorBindings();
         this.#contracts = new Map();
+        this.#abis = new Map();
     }
 
     /**
@@ -120,6 +122,13 @@ export class ContractSystem {
      * @returns opened contract
      */
     open<T extends Contract>(src: T) {
+
+        // Register ABI
+        if (src.abi) {
+            this.#abis.set(src.address.toString({ testOnly: true }), src.abi);
+        }
+
+        // Open contract
         return openContract(src, (params) => this.#provider(params.address, params.init));
     }
 
@@ -167,6 +176,14 @@ export class ContractSystem {
                 let res = await executor.get(name, args);
                 if (!res.success) {
                     throw Error(res.error);
+                }
+                if (res.exitCode !== 0 && res.exitCode !== 1) {
+                    let abi = this.#abis.get(address.toString({ testOnly: true }));
+                    if (abi && abi.errors && abi.errors[res.exitCode]) {
+                        throw new ComputeError(abi.errors[res.exitCode].message, res.exitCode);
+                    } else {
+                        throw new ComputeError('Exit code: ' + res.exitCode, res.exitCode);
+                    }
                 }
                 return { stack: res.stack! };
             },

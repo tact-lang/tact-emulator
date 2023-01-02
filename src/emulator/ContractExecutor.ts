@@ -12,7 +12,8 @@ function bigIntToBuffer(v: bigint, bytes: number) {
 export type GetMethodResult = {
     success: true
     gasUsed: bigint,
-    stack: TupleReader
+    stack: TupleReader,
+    exitCode: number
 } | {
     success: false,
     error: string
@@ -150,7 +151,8 @@ export class ContractExecutor {
             return {
                 success: true,
                 gasUsed: BigInt(result.output.gas_used),
-                stack: new TupleReader(resultStack)
+                stack: new TupleReader(resultStack),
+                exitCode: result.output.vm_exit_code
             };
         });
     }
