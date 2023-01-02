@@ -1,6 +1,6 @@
 {
   "name": "ton-emulator",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "dist/index.js",
   "repository": "https://github.com/ton-community/ton-emulator.git",
   "author": "Steve Korshakov <steve@korshakov.com>",
