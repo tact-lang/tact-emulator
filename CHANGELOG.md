@@ -10,6 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changed
 - Better typings for `Treasure` to include address
 
-## [1.0.0]
+## [1.0.1]
 
 🚀 Initial release
