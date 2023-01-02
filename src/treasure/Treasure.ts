@@ -29,6 +29,7 @@ export class TreasureContract implements Contract {
     readonly address: Address;
     readonly init: { code: Cell, data: Cell };
     readonly keypair: KeyPair;
+    private seqno: number = 0;
 
     constructor(workchain: number, keypair: KeyPair) {
         let code = Cell.fromBoc(Buffer.from(walletCode, 'base64'))[0];
@@ -42,20 +43,9 @@ export class TreasureContract implements Contract {
         this.keypair = keypair;
     }
 
-    async getSeqno(provider: ContractProvider): Promise<number> {
-        let state = await provider.getState();
-        if (state.state.type === 'active') {
-            let res = await provider.get('seqno', []);
-            return res.stack.readNumber();
-        } else {
-            return 0;
-        }
-    }
-
     async send(provider: ContractProvider, src: MessageRelaxed[], sendMode?: SendMode) {
-        let seqno = await this.getSeqno(provider);
         let transfer = this.createTransfer({
-            seqno,
+            seqno: this.seqno++,
             sendMode: sendMode,
             messages: src
         });
@@ -66,9 +56,8 @@ export class TreasureContract implements Contract {
         return {
             address,
             send: async (args) => {
-                let seqno = await this.getSeqno(provider);
                 let transfer = this.createTransfer({
-                    seqno,
+                    seqno: this.seqno++,
                     sendMode: args.sendMode,
                     messages: [internal({
                         to: args.to,
