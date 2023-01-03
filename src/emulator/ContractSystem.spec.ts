@@ -1,7 +1,7 @@
 import { ContractSystem } from "./ContractSystem";
 import { testAddress } from "../utils/testAddress";
 import { inspect } from "util";
-import { toNano } from "ton-core";
+import { beginCell, toNano } from "ton-core";
 
 describe('ContractSystem', () => {
     it('should send messages', async () => {
@@ -10,6 +10,7 @@ describe('ContractSystem', () => {
         let system = await ContractSystem.create();
         let treasure = system.treasure('treasure');
         let unknownAddress = testAddress('unknown');
+        let tracker = system.track(treasure.address);
 
         // Send a message
         await treasure.send({
@@ -17,14 +18,18 @@ describe('ContractSystem', () => {
             bounce: true,
             value: toNano(1),
         });
-        console.warn(inspect(await system.run(), false, 10000));
+        await system.run();
 
         // Send second time
         await treasure.send({
             to: unknownAddress,
             bounce: true,
             value: toNano(1),
+            body: beginCell().storeUint(0, 32).storeStringTail('Hello world!').endCell()
         });
-        console.warn(inspect(await system.run(), false, 10000));
+        await system.run();
+
+        // Events
+        expect(tracker.events()).toMatchSnapshot();
     });
 });

@@ -1,6 +1,7 @@
 import { Address, Cell, comment, ComputeError, Contract, ContractABI, ContractProvider, external, Message, openContract, toNano, Transaction } from "ton-core";
 import { EmulatorBindings } from "../bindings/EmulatorBindings";
-import { Treasure, TreasureContract } from "../treasure/Treasure";
+import { Tracker } from "../events/tracker";
+import { TreasureContract } from "../treasure/Treasure";
 import { defaultConfig } from "../utils/defaultConfig";
 import { Maybe } from "../utils/maybe";
 import { testKey } from "../utils/testKey";
@@ -22,6 +23,7 @@ export class ContractSystem {
     #contracts: Map<string, ContractExecutor>;
     #abis: Map<string, ContractABI>;
     #pending: Message[] = [];
+    #trackers = new Map<string, Tracker[]>();
 
     /**
      * Get current network config
@@ -141,14 +143,45 @@ export class ContractSystem {
             let p = this.#pending.shift()!; // TODO: Better (random?) way to select pending message
 
             if (p.info.type === 'internal' || p.info.type === 'external-in') {
+
+                // Execute
                 let tx = await this.contract(p.info.dest).receive(p);
+
+                // Track
+                let key = p.info.dest.toString({ testOnly: true });
+                let t = this.#trackers.get(key);
+                if (t) {
+                    for (let tr of t) {
+                        tr.track(tx, this);
+                    }
+                }
+
+                // Add to result
                 result.push(tx);
+
+                // Add to pending
                 for (let m of tx.outMessages.values()) {
                     this.#send(m);
                 }
             }
         }
         return result;
+    }
+
+    /**
+     * Create a tracker for a contract
+     * @param address contract address
+     */
+    track(address: Address) {
+        let tracker = new Tracker(address);
+        let key = address.toString({ testOnly: true });
+        let trackers = this.#trackers.get(key);
+        if (!trackers) {
+            trackers = [];
+            this.#trackers.set(key, trackers);
+        }
+        trackers.push(tracker);
+        return tracker;
     }
 
     /**

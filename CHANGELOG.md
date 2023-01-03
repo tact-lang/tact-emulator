@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+- `Tracker` for tracking contract transactions
+
 ## Fixed
 - Allow sending multiple treasure messages in a single block
 

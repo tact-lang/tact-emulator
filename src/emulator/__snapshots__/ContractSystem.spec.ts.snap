@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ContractSystem should send messages 1`] = `
+[
+  {
+    "type": "deploy",
+  },
+  {
+    "message": {
+      "body": {
+        "cell": "x{CC78E031CD53F4684B97F4BB2FF4B0034FB709E4CC50398F7F9BFD205667F49D25F4B6E23FBD8A22025689813998C3D3A0EA5219F11C7907A5F125512AAB8F0B29A9A317FFFFFFFF00000000C_}
+ x{D001}
+  x{62005267EAC3643620B785BD578E117C4FFD17313A14F76F28642C14133842650C1DA1DCD6500000000000000000000000000000}",
+        "type": "cell",
+      },
+      "to": "kQBbjpCWk51tkYZGsmjT-XQUL0QGlxJD4fQHGbYhdCbwQlX-",
+      "type": "external-in",
+    },
+    "type": "received",
+  },
+  {
+    "gasUsed": 3583n,
+    "type": "processed",
+  },
+  {
+    "messages": [
+      {
+        "body": {
+          "type": "empty",
+        },
+        "bounce": true,
+        "from": "kQBbjpCWk51tkYZGsmjT-XQUL0QGlxJD4fQHGbYhdCbwQlX-",
+        "to": "kQCkz9WGyGxBbwt6rxwi-J_6LmJ0Ke7eUMhYKCZwhMoYO0c2",
+        "type": "internal",
+        "value": 1000000000n,
+      },
+    ],
+    "type": "sent",
+  },
+  {
+    "message": {
+      "body": {
+        "type": "empty",
+      },
+      "bounce": false,
+      "from": "kQCkz9WGyGxBbwt6rxwi-J_6LmJ0Ke7eUMhYKCZwhMoYO0c2",
+      "to": "kQBbjpCWk51tkYZGsmjT-XQUL0QGlxJD4fQHGbYhdCbwQlX-",
+      "type": "internal",
+      "value": 999000000n,
+    },
+    "type": "received-bounced",
+  },
+  {
+    "gasUsed": 409n,
+    "type": "processed",
+  },
+  {
+    "message": {
+      "body": {
+        "cell": "x{7044FC22273A55D4E116F23A95F51F01E92BFE98EEEE67D299582CF99A8D6E4D2543CBE38D05758B3CE3ED63518A96829E48274172638A73C613E0A4E96FBF0D29A9A317FFFFFFFF00000001C_}
+ x{D001}
+  x{62005267EAC3643620B785BD578E117C4FFD17313A14F76F28642C14133842650C1DA1DCD65000000000000000000000000000000000000048656C6C6F20776F726C6421}",
+        "type": "cell",
+      },
+      "to": "kQBbjpCWk51tkYZGsmjT-XQUL0QGlxJD4fQHGbYhdCbwQlX-",
+      "type": "external-in",
+    },
+    "type": "received",
+  },
+  {
+    "gasUsed": 3583n,
+    "type": "processed",
+  },
+  {
+    "messages": [
+      {
+        "body": {
+          "text": "Hello world!",
+          "type": "text",
+        },
+        "bounce": true,
+        "from": "kQBbjpCWk51tkYZGsmjT-XQUL0QGlxJD4fQHGbYhdCbwQlX-",
+        "to": "kQCkz9WGyGxBbwt6rxwi-J_6LmJ0Ke7eUMhYKCZwhMoYO0c2",
+        "type": "internal",
+        "value": 1000000000n,
+      },
+    ],
+    "type": "sent",
+  },
+  {
+    "message": {
+      "body": {
+        "type": "empty",
+      },
+      "bounce": false,
+      "from": "kQCkz9WGyGxBbwt6rxwi-J_6LmJ0Ke7eUMhYKCZwhMoYO0c2",
+      "to": "kQBbjpCWk51tkYZGsmjT-XQUL0QGlxJD4fQHGbYhdCbwQlX-",
+      "type": "internal",
+      "value": 999000000n,
+    },
+    "type": "received-bounced",
+  },
+  {
+    "gasUsed": 409n,
+    "type": "processed",
+  },
+]
+`;
