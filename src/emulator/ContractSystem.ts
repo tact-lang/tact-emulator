@@ -215,9 +215,9 @@ export class ContractSystem {
                 if (res.exitCode !== 0 && res.exitCode !== 1) {
                     let abi = this.#abis.get(address.toString({ testOnly: true }));
                     if (abi && abi.errors && abi.errors[res.exitCode]) {
-                        throw new ComputeError(abi.errors[res.exitCode].message, res.exitCode);
+                        throw new ComputeError(abi.errors[res.exitCode].message, res.exitCode, { logs: res.vmLogs });
                     } else {
-                        throw new ComputeError('Exit code: ' + res.exitCode, res.exitCode);
+                        throw new ComputeError('Exit code: ' + res.exitCode, res.exitCode, { logs: res.vmLogs });
                     }
                 }
                 return { stack: res.stack! };

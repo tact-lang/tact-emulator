@@ -13,7 +13,8 @@ export type GetMethodResult = {
     success: true
     gasUsed: bigint,
     stack: TupleReader,
-    exitCode: number
+    exitCode: number,
+    vmLogs: string,
 } | {
     success: false,
     error: string
@@ -125,7 +126,7 @@ export class ContractExecutor {
             }
 
             let result = await this.system.bindings.runGetMethod({
-                verbosity: 0,
+                verbosity: 3,
                 address: this.address,
                 code: this.#state.storage.state.state.code,
                 data: this.#state.storage.state.state.data,
@@ -159,7 +160,8 @@ export class ContractExecutor {
                 success: true,
                 gasUsed: BigInt(result.output.gas_used),
                 stack: new TupleReader(resultStack),
-                exitCode: result.output.vm_exit_code
+                exitCode: result.output.vm_exit_code,
+                vmLogs: result.output.vm_log
             };
         });
     }
