@@ -281,4 +281,20 @@ export class ContractSystem {
             }
         }
     }
+
+    //
+    // Utility
+    //
+
+    getContractError(address: Address, code: number) {
+        let b = this.#abis.get(address.toString({ testOnly: true }));
+        if (!b) {
+            return null;
+        }
+        if (b.errors && b.errors[code]) {
+            return b.errors[code].message;
+        } else {
+            return null;
+        }
+    }
 }

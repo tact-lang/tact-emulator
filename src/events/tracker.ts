@@ -49,7 +49,8 @@ export class Tracker {
             if (tx.description.computePhase.success) {
                 this._events.push({ type: 'processed', gasUsed: tx.description.computePhase.gasUsed });
             } else {
-                this._events.push({ type: 'failed', errorCode: tx.description.computePhase.exitCode });
+                let error = system.getContractError(this.address, tx.description.computePhase.exitCode);
+                this._events.push({ type: 'failed', errorCode: tx.description.computePhase.exitCode, ...(error ? { errorMessage: error } : {}) });
             }
         } else {
             this._events.push({ type: 'skipped', reason: tx.description.computePhase.reason });
