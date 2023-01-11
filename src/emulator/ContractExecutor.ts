@@ -103,6 +103,12 @@ export class ContractExecutor {
         }
     }
 
+    override = (code: Cell, data: Cell, balance: bigint) => {
+        this.#balance = balance;
+        this.#state = createAccount({ code, data, address: this.address, balance });
+        this.#last = { lt: 0n, hash: 0n };
+    }
+
     get = async (method: string | number, stack?: TupleItem[]): Promise<GetMethodResult> => {
         return await this.#lock.inLock(async () => {
 

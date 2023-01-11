@@ -95,6 +95,32 @@ export class ContractSystem {
     }
 
     /**
+     * Override contract state
+     * @param address 
+     * @param code 
+     * @param data 
+     * @param balance
+     */
+    override(address: Address, code: Cell, data: Cell, balance: bigint) {
+        this.contract(address).override(code, data, balance);
+    }
+
+    /**
+     * Update system state
+     */
+    update(updates: { now?: Maybe<number>, lt?: Maybe<bigint>, config?: Maybe<Cell> }) {
+        if (updates.now !== null && updates.now !== undefined) {
+            this.#now = updates.now;
+        }
+        if (updates.config !== null && updates.config !== undefined) {
+            this.#config = updates.config;
+        }
+        if (updates.lt !== null && updates.lt !== undefined) {
+            this.#lt = updates.lt;
+        }
+    }
+
+    /**
      * Get empty Contract Executor for a contract
      * @param contract contract address
      * @returns contract executor
