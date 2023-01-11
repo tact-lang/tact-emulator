@@ -21,6 +21,10 @@ export class Tracker {
         }
     }
 
+    reset() {
+        this._events = [];
+    }
+
     track(tx: Transaction, system: ContractSystem) {
 
         // Some sanity checks
