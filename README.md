@@ -5,7 +5,7 @@ Emulation toolkit for TON Smart Contracts
 ## Installation
 
 ```bash
-yarn install ton-emulator ton-core ton-crypto
+yarn add ton-emulator ton-core ton-crypto
 ```
 
 ## Usage
