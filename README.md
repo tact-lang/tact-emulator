@@ -1,6 +1,6 @@
 # TON Emulator
 
-Emulation toolkit for Smart Contract testing
+Emulation toolkit for TON Smart Contracts
 
 ## Installation
 
