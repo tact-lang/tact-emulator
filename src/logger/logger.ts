@@ -10,13 +10,9 @@ export class Logger {
     }
 
     collect() {
-        if (this._logs.length > 0) {
-            let r = this._logs;
-            this._logs = [];
-            return r.map((v) => '===================\n' + 'TX: ' + v.$seq + '\n===================\n' + v.logs).join('\n\n');
-        } else {
-            return [];
-        }
+        let r = this._logs.map((v) => '===================\n' + 'TX: ' + v.$seq + '\n===================\n' + v.logs).join('\n\n');
+        this._logs = [];
+        return r;
     }
 
     reset() {

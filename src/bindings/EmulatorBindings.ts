@@ -310,15 +310,13 @@ function prepareLogs(errors: string[], stdout: string, vmLogs: string) {
         logs += '\n'
     }
 
-    // NOTE: VM Logs are part of stdout in current wasm binary
-
     // VM log
-    // if (vmLogs.length > 0) {
-    //     logs += '=== VM LOGS ===\n'
-    //     logs += vmLogs;
-    //     logs += '\n'
-    //     logs += '\n'
-    // }
+    if (vmLogs.length > 0) {
+        logs += '=== VM LOGS ===\n'
+        logs += vmLogs;
+        logs += '\n'
+        logs += '\n'
+    }
 
     // Stdout
     if (stdout.length > 0) {
