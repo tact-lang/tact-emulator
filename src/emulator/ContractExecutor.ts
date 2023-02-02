@@ -14,7 +14,7 @@ export type GetMethodResult = {
     gasUsed: bigint,
     stack: TupleReader,
     exitCode: number,
-    vmLogs: string,
+    logs: string,
 } | {
     success: false,
     error: string
@@ -168,7 +168,7 @@ export class ContractExecutor {
                 gasUsed: BigInt(result.output.gas_used),
                 stack: new TupleReader(resultStack),
                 exitCode: result.output.vm_exit_code,
-                vmLogs: result.output.vm_log
+                logs: result.logs
             };
         });
     }
@@ -210,10 +210,10 @@ export class ContractExecutor {
                 return {
                     seq: this.#index++,
                     tx: t,
-                    vmLog: res.output.vm_log
+                    logs: res.logs
                 }
             } else {
-                console.warn(res.output.vm_log);
+                console.warn(res.logs);
                 throw Error(res.output.error);
             }
         });

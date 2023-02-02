@@ -188,7 +188,7 @@ export class ContractSystem {
                 let l = this.#loggers.get(key);
                 if (l) {
                     for (let tr of l) {
-                        tr.track(tx.seq, tx.vmLog, this);
+                        tr.track(tx.seq, tx.logs, this);
                     }
                 }
 
@@ -267,12 +267,12 @@ export class ContractSystem {
                 if (res.exitCode !== 0 && res.exitCode !== 1) {
                     let abi = this.#abis.get(address.toString({ testOnly: true }));
                     if (abi && abi.errors && abi.errors[res.exitCode]) {
-                        throw new ComputeError(abi.errors[res.exitCode].message, res.exitCode, { logs: res.vmLogs });
+                        throw new ComputeError(abi.errors[res.exitCode].message, res.exitCode, { logs: res.logs });
                     } else {
-                        throw new ComputeError('Exit code: ' + res.exitCode, res.exitCode, { logs: res.vmLogs });
+                        throw new ComputeError('Exit code: ' + res.exitCode, res.exitCode, { logs: res.logs });
                     }
                 }
-                return { stack: res.stack! };
+                return { stack: res.stack!, gasUsed: res.gasUsed, logs: res.logs };
             },
             internal: async (via, message) => {
 
