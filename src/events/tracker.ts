@@ -1,20 +1,20 @@
 import { Address, Cell, Message, Transaction } from "ton-core";
 import { ContractSystem } from "../emulator/ContractSystem";
-import { TrackedEvent } from "./events";
+import { TrackedEvent, TrackedTransaction } from "./events";
 import { TrackedBody, TrackedMessage } from './message';
 
 export class Tracker {
     readonly address: Address;
-    private _events: TrackedEvent[] = [];
+    private _transactions: TrackedTransaction[] = [];
 
     constructor(address: Address) {
         this.address = address;
     }
 
-    events() {
-        if (this._events.length > 0) {
-            let r = this._events;
-            this._events = [];
+    collect() {
+        if (this._transactions.length > 0) {
+            let r = this._transactions;
+            this._transactions = [];
             return r;
         } else {
             return [];
@@ -22,10 +22,10 @@ export class Tracker {
     }
 
     reset() {
-        this._events = [];
+        this._transactions = [];
     }
 
-    track(tx: Transaction, system: ContractSystem) {
+    track(seq: number, tx: Transaction, system: ContractSystem) {
 
         // Some sanity checks
         if (!tx.inMessage) {
@@ -35,40 +35,45 @@ export class Tracker {
             throw Error('Non-generic transaction is not supported');
         }
 
+        let events: TrackedEvent[] = [];
+
         // Check if deployed
         if ((tx.oldStatus === 'non-existing' || tx.oldStatus === 'uninitialized') && tx.endStatus === 'active') {
-            this._events.push({ type: 'deploy' });
+            events.push({ $type: 'deploy' });
         }
 
         // Incoming message
         let msg = convertMessage(tx.inMessage);
         if (tx.inMessage.info.type === 'internal' && tx.inMessage.info.bounced) {
-            this._events.push({ type: 'received-bounced', message: msg });
+            events.push({ $type: 'received-bounced', message: msg });
         } else {
-            this._events.push({ type: 'received', message: msg });
+            events.push({ $type: 'received', message: msg });
         }
 
         // Processing
         if (tx.description.computePhase.type === 'vm') {
             if (tx.description.computePhase.success) {
-                this._events.push({ type: 'processed', gasUsed: tx.description.computePhase.gasUsed });
+                events.push({ $type: 'processed', gasUsed: tx.description.computePhase.gasUsed });
             } else {
                 let error = system.getContractError(this.address, tx.description.computePhase.exitCode);
-                this._events.push({ type: 'failed', errorCode: tx.description.computePhase.exitCode, ...(error ? { errorMessage: error } : {}) });
+                events.push({ $type: 'failed', errorCode: tx.description.computePhase.exitCode, ...(error ? { errorMessage: error } : {}) });
             }
         } else {
-            this._events.push({ type: 'skipped', reason: tx.description.computePhase.reason });
+            events.push({ $type: 'skipped', reason: tx.description.computePhase.reason });
         }
 
         // Outgoing messages
         for (let outgoingMessage of tx.outMessages.values()) {
             let msg = convertMessage(outgoingMessage);
             if (outgoingMessage.info.type === 'internal' && outgoingMessage.info.bounced) {
-                this._events.push({ type: 'sent-bounced', message: msg });
+                events.push({ $type: 'sent-bounced', message: msg });
             } else {
-                this._events.push({ type: 'sent', messages: [msg] });
+                events.push({ $type: 'sent', messages: [msg] });
             }
         }
+
+        // Persist events
+        this._transactions.push({ $seq: seq, events });
     }
 }
 

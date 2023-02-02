@@ -1,6 +1,5 @@
 import { ContractSystem } from "./ContractSystem";
 import { testAddress } from "../utils/testAddress";
-import { inspect } from "util";
 import { beginCell, toNano } from "ton-core";
 
 describe('ContractSystem', () => {
@@ -11,6 +10,7 @@ describe('ContractSystem', () => {
         let treasure = system.treasure('treasure');
         let unknownAddress = testAddress('unknown');
         let tracker = system.track(treasure.address);
+        let logs = system.log(treasure.address);
 
         // Send a message
         await treasure.send({
@@ -30,6 +30,7 @@ describe('ContractSystem', () => {
         await system.run();
 
         // Events
-        expect(tracker.events()).toMatchSnapshot();
+        expect(tracker.collect()).toMatchSnapshot();
+        console.warn(logs.collect());
     });
 });

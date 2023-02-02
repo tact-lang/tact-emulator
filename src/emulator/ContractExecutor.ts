@@ -36,6 +36,7 @@ export class ContractExecutor {
     #balance: bigint;
     #last: { lt: bigint, hash: bigint } = { lt: 0n, hash: 0n };
     #lock = new AsyncLock();
+    #index = 0;
 
     constructor(state: Account, system: ContractSystem) {
         this.system = system;
@@ -205,7 +206,12 @@ export class ContractExecutor {
                 }
 
                 // Load transaction
-                return loadTransaction(Cell.fromBoc(Buffer.from(res.output.transaction, 'base64'))[0].beginParse());
+                let t = loadTransaction(Cell.fromBoc(Buffer.from(res.output.transaction, 'base64'))[0].beginParse());
+                return {
+                    seq: this.#index++,
+                    tx: t,
+                    vmLog: res.output.vm_log
+                }
             } else {
                 console.warn(res.output.vm_log);
                 throw Error(res.output.error);

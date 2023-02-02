@@ -1,6 +1,7 @@
 import { Address, Cell, comment, ComputeError, Contract, ContractABI, ContractProvider, external, Message, openContract, toNano, Transaction } from "ton-core";
 import { EmulatorBindings } from "../bindings/EmulatorBindings";
 import { Tracker } from "../events/tracker";
+import { Logger } from '../logger/logger';
 import { TreasureContract } from "../treasure/Treasure";
 import { defaultConfig } from "../utils/defaultConfig";
 import { Maybe } from "../utils/maybe";
@@ -24,6 +25,7 @@ export class ContractSystem {
     #abis: Map<string, ContractABI>;
     #pending: Message[] = [];
     #trackers = new Map<string, Tracker[]>();
+    #loggers = new Map<string, Logger[]>();
 
     /**
      * Get current network config
@@ -172,21 +174,29 @@ export class ContractSystem {
 
                 // Execute
                 let tx = await this.contract(p.info.dest).receive(p);
+                let key = p.info.dest.toString({ testOnly: true });
 
                 // Track
-                let key = p.info.dest.toString({ testOnly: true });
                 let t = this.#trackers.get(key);
                 if (t) {
                     for (let tr of t) {
-                        tr.track(tx, this);
+                        tr.track(tx.seq, tx.tx, this);
+                    }
+                }
+
+                // Logs
+                let l = this.#loggers.get(key);
+                if (l) {
+                    for (let tr of l) {
+                        tr.track(tx.seq, tx.vmLog, this);
                     }
                 }
 
                 // Add to result
-                result.push(tx);
+                result.push(tx.tx);
 
                 // Add to pending
-                for (let m of tx.outMessages.values()) {
+                for (let m of tx.tx.outMessages.values()) {
                     this.#send(m);
                 }
             }
@@ -208,6 +218,22 @@ export class ContractSystem {
         }
         trackers.push(tracker);
         return tracker;
+    }
+
+    /**
+     * Create a logger for a contract
+     * @param address contract address
+     */
+    log(address: Address) {
+        let logger = new Logger(address);
+        let key = address.toString({ testOnly: true });
+        let loggers = this.#loggers.get(key);
+        if (!loggers) {
+            loggers = [];
+            this.#loggers.set(key, loggers);
+        }
+        loggers.push(logger);
+        return logger;
     }
 
     /**

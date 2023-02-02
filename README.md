@@ -19,6 +19,12 @@ const system = await ContractSystem.create();
 // Treasure is a contract that has 1m of TONs and is a handy entry point for your smart contracts
 let treasure = await system.treasure('my-treasure');
 
+// Track contract transactions and events
+let tracker = system.track(treasure.address);
+
+// Logger to collect VM logs from a contract
+let logger = system.log(treasure.address);
+
 // Create a random unknown address that would be treated as unititialized contract
 let unknownAddress = testAddress('some-unknown-seed'); // This seed is used to generate deterministic address
 
@@ -34,6 +40,12 @@ console.warn(inspect(transactions, false, 10000));
 
 // Open a contract
 let wallet = system.open(WalletContractV4.create({ workchain: 0, publicKey: <some-test-key> }));
+
+// Show contract logs
+console.warn(logger.collect());
+
+// Test events and transactions
+expect(tracker.collect()).toMatchSnapshot();
 
 ```
 

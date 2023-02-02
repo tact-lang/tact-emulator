@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## Added
+- `Logger` to collect VM Logs from transactions
+
+## Changed
+- `Tracker` now collects transactions instead of plain events for easier debugging
+- `events()` renamed to `collect()`
+- Changed `type` field in events to `$type` for better readability of jest snapshots
+
 ## [1.6.1] - 2023-01-26
 
 ## Changed
