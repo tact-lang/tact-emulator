@@ -141,7 +141,7 @@ export class ContractSystem {
      */
     contract(contract: AddressSource) {
         let address = resolveAddress(contract);
-        let key = contract.toString({ testOnly: true });
+        let key = address.toString({ testOnly: true });
         let executor = this.#contracts.get(key);
         if (!executor) {
             executor = ContractExecutor.createEmpty(address, this);

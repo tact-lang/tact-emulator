@@ -9,6 +9,7 @@ describe('ContractSystem', () => {
         let system = await ContractSystem.create();
         let treasure = system.treasure('treasure');
         let unknownAddress = randomAddress('unknown');
+        system.name({ address: unknownAddress }, 'unknown');
         let tracker = system.track(treasure.address);
         let logs = system.log(treasure.address);
 

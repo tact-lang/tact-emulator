@@ -101,9 +101,12 @@ function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
 
     // External in
     if (src.info.type === 'external-in') {
+        let toRaw = src.info.dest.toString({ testOnly: true });
+        let knownTo = system.getContractName(src.info.dest);
+        let to = knownTo ? '@' + knownTo : toRaw;
         return {
             type: 'external-in',
-            to: src.info.dest.toString({ testOnly: true }),
+            to: to,
             body: { type: 'cell', cell: src.body.toString() }
         };
     }
