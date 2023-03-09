@@ -3,6 +3,7 @@ import { EmulatorBindings } from "../bindings/EmulatorBindings";
 import { Tracker } from "../events/tracker";
 import { Logger } from '../logger/logger';
 import { TreasureContract } from "../treasure/Treasure";
+import { AddressSource, resolveAddress } from "../utils/addressSource";
 import { defaultConfig } from "../utils/defaultConfig";
 import { Maybe } from "../utils/maybe";
 import { testKey } from "../utils/testKey";
@@ -60,7 +61,7 @@ export class ContractSystem {
     /**
      * Returns current verbosity level
      */
-    get verbosity() {
+    get globalVerbosity() {
         return this.#verbosity;
     }
 
@@ -98,8 +99,10 @@ export class ContractSystem {
         let treasure = TreasureContract.create(workchain, key);
         let wallet = this.open(treasure);
 
-        // Update wallet balance
-        this.contract(treasure.address).balance = toNano(1000000);
+        // Update wallet balance and name
+        let executor = this.contract(treasure.address);
+        executor.balance = toNano(1000000);
+        executor.name = `treasure(${seed})`;
 
         // Return sender
         return wallet.sender(treasure.address);
@@ -133,14 +136,15 @@ export class ContractSystem {
 
     /**
      * Get empty Contract Executor for a contract
-     * @param contract contract address
+     * @param contract contract address or contract instance
      * @returns contract executor
      */
-    contract(contract: Address) {
+    contract(contract: AddressSource) {
+        let address = resolveAddress(contract);
         let key = contract.toString({ testOnly: true });
         let executor = this.#contracts.get(key);
         if (!executor) {
-            executor = ContractExecutor.createEmpty(contract, this);
+            executor = ContractExecutor.createEmpty(address, this);
             this.#contracts.set(key, executor);
         }
         return executor;
@@ -215,9 +219,10 @@ export class ContractSystem {
 
     /**
      * Create a tracker for a contract
-     * @param address contract address
+     * @param address contract or it's address
      */
-    track(address: Address) {
+    track(contract: AddressSource) {
+        let address = resolveAddress(contract);
         let tracker = new Tracker(address);
         let key = address.toString({ testOnly: true });
         let trackers = this.#trackers.get(key);
@@ -231,9 +236,10 @@ export class ContractSystem {
 
     /**
      * Create a logger for a contract
-     * @param address contract address
+     * @param address contract or it's address
      */
-    log(address: Address) {
+    log(contract: AddressSource) {
+        let address = resolveAddress(contract);
         let logger = new Logger(address);
         let key = address.toString({ testOnly: true });
         let loggers = this.#loggers.get(key);
@@ -243,6 +249,24 @@ export class ContractSystem {
         }
         loggers.push(logger);
         return logger;
+    }
+
+    /**
+     * Sets contract name
+     * @param contract contract or it's address
+     * @param name optional name
+     */
+    name(contract: AddressSource, name: string | null) {
+        this.contract(contract).name = name;
+    }
+
+    /**
+     * Verbose level for a contract
+     * @param contract contract or it's address
+     * @param level verbosity level
+     */
+    verbosity(contract: AddressSource, level: Verbosity) {
+        this.contract(contract).verbosity = level;
     }
 
     /**
@@ -357,5 +381,13 @@ export class ContractSystem {
         } else {
             return null;
         }
+    }
+
+    getContractName(address: Address): string | null {
+        let ex = this.#contracts.get(address.toString({ testOnly: true }));
+        if (!ex) {
+            return null;
+        }
+        return ex.name;
     }
 }

@@ -43,7 +43,7 @@ export class Tracker {
         }
 
         // Incoming message
-        let msg = convertMessage(tx.inMessage);
+        let msg = convertMessage(tx.inMessage, system);
         if (tx.inMessage.info.type === 'internal' && tx.inMessage.info.bounced) {
             events.push({ $type: 'received-bounced', message: msg });
         } else {
@@ -64,7 +64,7 @@ export class Tracker {
 
         // Outgoing messages
         for (let outgoingMessage of tx.outMessages.values()) {
-            let msg = convertMessage(outgoingMessage);
+            let msg = convertMessage(outgoingMessage, system);
             if (outgoingMessage.info.type === 'internal' && outgoingMessage.info.bounced) {
                 events.push({ $type: 'sent-bounced', message: msg });
             } else {
@@ -77,14 +77,22 @@ export class Tracker {
     }
 }
 
-function convertMessage(src: Message): TrackedMessage {
+function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
 
     // Internal message
     if (src.info.type === 'internal') {
+
+        let fromRaw = src.info.src.toString({ testOnly: true });
+        let knownFrom = system.getContractName(src.info.src);
+        let toRaw = src.info.dest.toString({ testOnly: true });
+        let knownTo = system.getContractName(src.info.dest);
+        let to = knownTo ? '@' + knownTo : toRaw;
+        let from = knownFrom ? '@' + knownFrom : fromRaw;
+
         return {
             type: 'internal',
-            from: src.info.src.toString({ testOnly: true }),
-            to: src.info.dest.toString({ testOnly: true }),
+            from,
+            to,
             value: src.info.value.coins,
             bounce: src.info.bounce,
             body: convertBody(src.body)

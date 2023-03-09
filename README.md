@@ -19,16 +19,17 @@ const system = await ContractSystem.create();
 
 // Treasure is a contract that has 1m of TONs and is a handy entry point for your smart contracts
 let treasure = await system.treasure('my-treasure');
+system.name(treasure, 'my treasure'); // Set a name for the contract. Useful for snapshot testing.
 
 // Update verbosity
-system.verbosity = Verbosity.DEBUG; // Global parameter
-system.contract(treasure.address).verbosity = Verbosity.ERROR; // Overwrite for a specific contract
+system.globalVerbosity = Verbosity.DEBUG; // Global parameter
+system.verbosity(treasure, Verbosity.ERROR); // Overwrite for a specific contract
 
 // Track contract transactions and events
-let tracker = system.track(treasure.address);
+let tracker = system.track(treasure);
 
 // Logger to collect VM logs from a contract
-let logger = system.log(treasure.address);
+let logger = system.log(treasure);
 
 // Create a random unknown address that would be treated as unititialized contract
 let unknownAddress = randomAddress('some-unknown-seed'); // This seed is used to generate deterministic address

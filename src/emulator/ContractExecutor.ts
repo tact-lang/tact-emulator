@@ -22,12 +22,27 @@ export type GetMethodResult = {
     error: string
 }
 
+/**
+ * Contract executor is wrapper around contract state
+ */
 export class ContractExecutor {
 
+    /**
+     * Create contract empty contract executor
+     * @param address contract address
+     * @param system contract system
+     * @returns executor instance
+     */
     static createEmpty(address: Address, system: ContractSystem) {
         return new ContractExecutor(createEmptyAccount(address), system);
     }
 
+    /**
+     * Create contract executor from account state
+     * @param args code, data, address and balance
+     * @param system contract system
+     * @returns executor instance
+     */
     static async create(args: { code: Cell, data: Cell, address?: Address, balance?: bigint }, system: ContractSystem) {
         return new ContractExecutor(createAccount(args), system);
     }
@@ -40,22 +55,46 @@ export class ContractExecutor {
     #lock = new AsyncLock();
     #index = 0;
     #verbosity: Verbosity | null = null;
+    #name: string | null = null;
 
-    get verbosity() {
-        return this.#verbosity;
-    }
-
-    set verbosity(v: Verbosity | null) {
-        this.#verbosity = v;
-    }
-
-    constructor(state: Account, system: ContractSystem) {
+    private constructor(state: Account, system: ContractSystem) {
         this.system = system;
         this.address = state.addr;
         this.#state = state;
         this.#balance = this.#state.storage.balance.coins;
     }
 
+    /**
+     * Returns optional address name
+     */
+    get name() {
+        return this.#name;
+    }
+
+    /**
+     * Sets optional address name
+     */
+    set name(v: string | null) {
+        this.#name = v;
+    }
+
+    /**
+     * Returns contract verbosity level
+     */
+    get verbosity() {
+        return this.#verbosity;
+    }
+
+    /**
+     * Sets contract verbosity level
+     */
+    set verbosity(v: Verbosity | null) {
+        this.#verbosity = v;
+    }
+
+    /**
+     * Returns current state of a contract
+     */
     get state(): ContractState {
         let balance = this.#balance;
         let last: {
@@ -100,10 +139,16 @@ export class ContractExecutor {
         }
     }
 
+    /**
+     * Returns current balance of a contract
+     */
     get balance() {
         return this.#balance;
     }
 
+    /**
+     * Sets current balance of a contract
+     */
     set balance(v: bigint) {
         this.#balance = v;
         this.#state = {
@@ -115,6 +160,12 @@ export class ContractExecutor {
         }
     }
 
+    /**
+     * Replaces current contract state with new one
+     * @param code contract code
+     * @param data contract data
+     * @param balance contract balance
+     */
     override = (code: Cell, data: Cell, balance: bigint) => {
         this.#balance = balance;
         this.#state = createAccount({ code, data, address: this.address, balance });
@@ -144,7 +195,7 @@ export class ContractExecutor {
             }
 
             // Resolve verbosity
-            let verbosity = this.verbosity !== null ? this.verbosity : this.system.verbosity;
+            let verbosity = this.verbosity !== null ? this.verbosity : this.system.globalVerbosity;
 
             let result = await this.system.bindings.runGetMethod({
                 verbosity: verbosity,
@@ -194,7 +245,7 @@ export class ContractExecutor {
             }
 
             // Resolve verbosity
-            let verbosity = this.verbosity !== null ? this.verbosity : this.system.verbosity;
+            let verbosity = this.verbosity !== null ? this.verbosity : this.system.globalVerbosity;
 
             // Execute transaction
             let res = await this.system.bindings.transaction({
