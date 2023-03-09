@@ -20,6 +20,10 @@ const system = await ContractSystem.create();
 // Treasure is a contract that has 1m of TONs and is a handy entry point for your smart contracts
 let treasure = await system.treasure('my-treasure');
 
+// Update verbosity
+system.verbosity = Verbosity.DEBUG; // Global parameter
+system.contract(treasure.address).verbosity = Verbosity.ERROR; // Overwrite for a specific contract
+
 // Track contract transactions and events
 let tracker = system.track(treasure.address);
 

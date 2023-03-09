@@ -4,6 +4,7 @@ export { ContractExecutor } from './emulator/ContractExecutor';
 export { randomAddress, randomExternalAddress } from './utils/randomAddress'
 export { testKey } from './utils/testKey';
 export { Treasure } from './treasure/Treasure';
+export { Verbosity } from './emulator/Verbosity';
 
 // Tracker
 export { Tracker } from './events/tracker';

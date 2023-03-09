@@ -3,7 +3,9 @@ import { Account, Address, beginCell, Cell, ContractState, loadShardAccount, loa
 import { createAccount } from "../utils/createAccount";
 import { createEmptyAccount } from "../utils/createEmptyAccount";
 import { getMethodId } from "../utils/getMethodId";
+import { Maybe } from "../utils/maybe";
 import { ContractSystem } from "./ContractSystem";
+import { Verbosity } from "./Verbosity";
 
 function bigIntToBuffer(v: bigint, bytes: number) {
     return beginCell().storeUint(v, bytes * 8).endCell().beginParse().loadBuffer(bytes);
@@ -37,6 +39,15 @@ export class ContractExecutor {
     #last: { lt: bigint, hash: bigint } = { lt: 0n, hash: 0n };
     #lock = new AsyncLock();
     #index = 0;
+    #verbosity: Verbosity | null = null;
+
+    get verbosity() {
+        return this.#verbosity;
+    }
+
+    set verbosity(v: Verbosity | null) {
+        this.#verbosity = v;
+    }
 
     constructor(state: Account, system: ContractSystem) {
         this.system = system;
@@ -110,7 +121,7 @@ export class ContractExecutor {
         this.#last = { lt: 0n, hash: 0n };
     }
 
-    get = async (method: string | number, stack?: TupleItem[]): Promise<GetMethodResult> => {
+    get = async (method: string | number, stack?: Maybe<TupleItem[]>): Promise<GetMethodResult> => {
         return await this.#lock.inLock(async () => {
 
             // Check contract state
@@ -132,8 +143,11 @@ export class ContractExecutor {
                 methodId = method;
             }
 
+            // Resolve verbosity
+            let verbosity = this.verbosity !== null ? this.verbosity : this.system.verbosity;
+
             let result = await this.system.bindings.runGetMethod({
-                verbosity: 3,
+                verbosity: verbosity,
                 address: this.address,
                 code: this.#state.storage.state.state.code,
                 data: this.#state.storage.state.state.data,
@@ -179,11 +193,14 @@ export class ContractExecutor {
                 throw new Error(`Unsupported message type: ${msg.info.type}`);
             }
 
+            // Resolve verbosity
+            let verbosity = this.verbosity !== null ? this.verbosity : this.system.verbosity;
+
             // Execute transaction
             let res = await this.system.bindings.transaction({
                 config: this.system.config,
                 libs: null,
-                verbosity: 3,
+                verbosity: verbosity,
                 shardAccount: beginCell().store(storeShardAccount({ account: this.#state, lastTransactionHash: this.#last.hash, lastTransactionLt: this.#last.lt })).endCell(),
                 message: beginCell().store(storeMessage(msg)).endCell(),
                 now: this.system.now,

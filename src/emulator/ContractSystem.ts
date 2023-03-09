@@ -7,6 +7,7 @@ import { defaultConfig } from "../utils/defaultConfig";
 import { Maybe } from "../utils/maybe";
 import { testKey } from "../utils/testKey";
 import { ContractExecutor } from "./ContractExecutor";
+import { Verbosity } from "./Verbosity";
 
 /**
  * Contract system is a container for contracts that interact with each other
@@ -26,6 +27,7 @@ export class ContractSystem {
     #pending: Message[] = [];
     #trackers = new Map<string, Tracker[]>();
     #loggers = new Map<string, Logger[]>();
+    #verbosity: Verbosity = Verbosity.ERROR;
 
     /**
      * Get current network config
@@ -53,6 +55,13 @@ export class ContractSystem {
      */
     get lt() {
         return this.#lt;
+    }
+
+    /**
+     * Returns current verbosity level
+     */
+    get verbosity() {
+        return this.#verbosity;
     }
 
     private constructor(args?: { config?: Cell, now?: number, lt?: bigint }) {
