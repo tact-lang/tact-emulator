@@ -5,13 +5,13 @@ Emulation toolkit for TON Smart Contracts
 ## Installation
 
 ```bash
-yarn add @tact-lange/emulator ton-core ton-crypto
+yarn add @tact-lang/emulator ton-core ton-crypto
 ```
 
 ## Usage
 
 ```typescript
-import { ContractSystem, randomAddress } from '@tact-lange/emulator';
+import { ContractSystem, randomAddress } from '@tact-lang/emulator';
 import { WalletContractV4 } from 'ton';
 
 // Contract System is a virtual environment that emulates the TON blockchain
