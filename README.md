@@ -11,7 +11,8 @@ yarn add @tact-lange/emulator ton-core ton-crypto
 ## Usage
 
 ```typescript
-import { ContractSystem } from '@tact-lange/emulator';
+import { ContractSystem, randomAddress } from '@tact-lange/emulator';
+import { WalletContractV4 } from 'ton';
 
 // Contract System is a virtual environment that emulates the TON blockchain
 const system = await ContractSystem.create();
@@ -26,7 +27,7 @@ let tracker = system.track(treasure.address);
 let logger = system.log(treasure.address);
 
 // Create a random unknown address that would be treated as unititialized contract
-let unknownAddress = testAddress('some-unknown-seed'); // This seed is used to generate deterministic address
+let unknownAddress = randomAddress('some-unknown-seed'); // This seed is used to generate deterministic address
 
 // Send an empty message to the unknown address
 await treasure.send({

@@ -1,7 +1,7 @@
 import Prando from "prando";
 import { Address, ExternalAddress } from "ton-core";
 
-export function testAddress(seed: string, workchain: number = 0) {
+export function randomAddress(seed: string, workchain: number = 0) {
     const random = new Prando(seed);
     const hash = Buffer.alloc(32);
     for (let i = 0; i < hash.length; i++) {
@@ -11,7 +11,7 @@ export function testAddress(seed: string, workchain: number = 0) {
 }
 
 
-export function testExternalAddress(seed: string) {
+export function randomExternalAddress(seed: string) {
     const random = new Prando(seed);
     const hash = Buffer.alloc(32);
     for (let i = 0; i < hash.length; i++) {

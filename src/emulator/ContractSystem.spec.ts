@@ -1,5 +1,5 @@
 import { ContractSystem } from "./ContractSystem";
-import { testAddress } from "../utils/testAddress";
+import { randomAddress } from "../utils/randomAddress";
 import { beginCell, toNano } from "ton-core";
 
 describe('ContractSystem', () => {
@@ -8,7 +8,7 @@ describe('ContractSystem', () => {
         // Create contract system and a wallet
         let system = await ContractSystem.create();
         let treasure = system.treasure('treasure');
-        let unknownAddress = testAddress('unknown');
+        let unknownAddress = randomAddress('unknown');
         let tracker = system.track(treasure.address);
         let logs = system.log(treasure.address);
 

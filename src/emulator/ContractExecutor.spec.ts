@@ -1,5 +1,5 @@
 import { beginCell, Cell, toNano } from "ton-core";
-import { testAddress } from "../utils/testAddress";
+import { randomAddress } from "../utils/randomAddress";
 import { ContractExecutor } from "./ContractExecutor";
 import { ContractSystem } from "./ContractSystem";
 
@@ -26,7 +26,7 @@ describe('ContractExecutor', () => {
         let tx = await contract.receive({
             info: {
                 type: 'internal',
-                src: testAddress('address-1'),
+                src: randomAddress('address-1'),
                 dest: contract.address,
                 value: { coins: toNano(1) },
                 bounce: false,

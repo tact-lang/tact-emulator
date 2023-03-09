@@ -49,7 +49,8 @@ exports[`ContractSystem should send messages 1`] = `
         "$type": "received-bounced",
         "message": {
           "body": {
-            "type": "empty",
+            "cell": "x{FFFFFFFF}",
+            "type": "cell",
           },
           "bounce": false,
           "from": "kQCkz9WGyGxBbwt6rxwi-J_6LmJ0Ke7eUMhYKCZwhMoYO0c2",
@@ -109,7 +110,8 @@ exports[`ContractSystem should send messages 1`] = `
         "$type": "received-bounced",
         "message": {
           "body": {
-            "type": "empty",
+            "cell": "x{FFFFFFFF0000000048656C6C6F20776F726C6421}",
+            "type": "cell",
           },
           "bounce": false,
           "from": "kQCkz9WGyGxBbwt6rxwi-J_6LmJ0Ke7eUMhYKCZwhMoYO0c2",

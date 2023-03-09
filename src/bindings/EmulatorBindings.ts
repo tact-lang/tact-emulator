@@ -2,8 +2,8 @@ import { AsyncLock } from "teslabot";
 import { Address, Cell, serializeTuple, TupleItem } from "ton-core";
 
 // WASM bindings
-const createModule: (options: any) => Promise<any> = require(__dirname + '/../../wasm/emulator-emscripten');
-const wasmBinaryPack = require(__dirname + '/../../wasm/emulator-emscripten.wasm.js');
+const createModule: (options: any) => Promise<any> = require('./wasm/emulator-emscripten');
+const wasmBinaryPack = require('./wasm/emulator-emscripten.wasm.js');
 const wasmBinary = Buffer.from(wasmBinaryPack.wasmBinary, 'base64');
 
 // Helper functions
@@ -111,7 +111,6 @@ type TransactionResultInternal = {
 export class EmulatorBindings {
 
     #lock = new AsyncLock();
-    #instances = new Map<string, Pointer>();
     #module: any = null;
     #errLogs: string[] = [];
 
@@ -191,7 +190,7 @@ export class EmulatorBindings {
             try {
                 // Get module
                 let module = await this.getModule();
-                let instance = this.getInstance(module, args.config, args.verbosity);
+                // let instance = this.getInstance(module, args.config, args.verbosity);
 
                 // Params
                 const params = {
@@ -203,8 +202,9 @@ export class EmulatorBindings {
 
                 // Execute
                 let res = this.invoke(module, '_emulate', [
-                    instance,
+                    args.config.toBoc().toString('base64'),
                     args.libs ? args.libs.toBoc().toString('base64') : 0,
+                    args.verbosity,
                     args.shardAccount.toBoc().toString('base64'),
                     args.message.toBoc().toString('base64'),
                     JSON.stringify(params)
@@ -279,20 +279,6 @@ export class EmulatorBindings {
         }
         let module = this.#module;
         return module;
-    }
-
-    private getInstance(module: any, config: Cell, verbosity: number): Pointer {
-
-        // Check if instance already exists
-        let key = config.hash().toString('hex') + ':' + verbosity;
-        if (this.#instances.has(key)) {
-            return this.#instances.get(key);
-        }
-
-        // Create instance
-        let emulator = this.invoke(module, '_create_emulator', [config.toBoc().toString('base64'), verbosity]);
-        this.#instances.set(key, emulator);
-        return emulator;
     }
 }
 
