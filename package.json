@@ -2,7 +2,7 @@
   "name": "@tact-lang/emulator",
   "version": "2.1.1",
   "main": "dist/index.js",
-  "repository": "https://github.com/tact-lange/tact-emulator.git",
+  "repository": "https://github.com/tact-lang/tact-emulator.git",
   "author": "Steve Korshakov <steve@korshakov.com>",
   "license": "MIT",
   "files": [
