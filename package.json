@@ -11,7 +11,7 @@
     "wasm"
   ],
   "scripts": {
-    "build": "rm -fr dist && tsc --declaration",
+    "build": "rm -fr dist && tsc --declaration && cp -r src/bindings/wasm dist/bindings/wasm",
     "test": "jest --verbose --runInBand",
     "release": "yarn build && yarn test && yarn release-it --npm.yarn1"
   },
