@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.2.3] - 2023-03-10
 
 ## Fixed
 - Fix typo in `ton-core` and require it to be `>=0.48.0` (by @dvlkv)
