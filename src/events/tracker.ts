@@ -107,7 +107,7 @@ function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
         return {
             type: 'external-in',
             to: to,
-            body: { type: 'cell', cell: src.body.toString() }
+            body: convertBody(src.body)
         };
     }
 
@@ -115,7 +115,8 @@ function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
     if (src.info.type === 'external-out') {
         return {
             type: 'external-out',
-            to: src.info.dest ? src.info.dest.toString() : null
+            to: src.info.dest ? src.info.dest.toString() : null,
+            body: convertBody(src.body)
         };
     }
 

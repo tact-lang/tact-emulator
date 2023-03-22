@@ -17,7 +17,8 @@ export type TrackedMessage = {
     body: TrackedBody
 } | {
     type: 'external-out',
-    to: string | null
+    to: string | null,
+    body: TrackedBody
 } | {
     type: 'internal',
     from: string,
