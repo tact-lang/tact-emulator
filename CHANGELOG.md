@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix named contract in incoming external messages
 - Fix contract address handling in `contract` method
 
+## [Unreleased]
+
+## Fixed
+- Update WASM binares to the one with debug opcodes enabled
+
 ## [3.2.1] - 2023-03-09
 
 ## Fixed
