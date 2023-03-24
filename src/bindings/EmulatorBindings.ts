@@ -34,6 +34,7 @@ export type GetMethodArgs = {
 
 export type GetMethodResult = {
     logs: string;
+    vmLogs: string;
     output:
     | {
         success: true;
@@ -88,6 +89,7 @@ export type TransactionResult = {
         success: false;
         error: string;
     };
+    vmLogs: string;
     logs: string;
 }
 
@@ -161,6 +163,7 @@ export class EmulatorBindings {
                 if (txres.output.success) {
                     return {
                         logs,
+                        vmLogs: txres.output.vm_log,
                         output: {
                             success: true,
                             stack: txres.output.stack,
@@ -172,6 +175,7 @@ export class EmulatorBindings {
                 } else {
                     return {
                         logs,
+                        vmLogs: '',
                         output: {
                             success: false,
                             error: txres.output.error,
@@ -224,6 +228,7 @@ export class EmulatorBindings {
                 if (txres.output.success) {
                     return {
                         logs,
+                        vmLogs: txres.output.vm_log,
                         output: {
                             success: true,
                             transaction: txres.output.transaction,
@@ -234,6 +239,7 @@ export class EmulatorBindings {
                 } else {
                     return {
                         logs,
+                        vmLogs: txres.output.vm_log,
                         output: {
                             success: false,
                             error: txres.output.error

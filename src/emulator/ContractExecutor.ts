@@ -1,5 +1,6 @@
 import { AsyncLock } from "teslabot";
 import { Account, Address, beginCell, Cell, ContractState, loadShardAccount, loadTransaction, Message, parseTuple, storeMessage, storeShardAccount, TupleItem, TupleReader } from "ton-core";
+import { isCoverageEnabled, reportCoverage } from "../coverage/coverage";
 import { createAccount } from "../utils/createAccount";
 import { createEmptyAccount } from "../utils/createEmptyAccount";
 import { getMethodId } from "../utils/getMethodId";
@@ -196,6 +197,9 @@ export class ContractExecutor {
 
             // Resolve verbosity
             let verbosity = this.verbosity !== null ? this.verbosity : this.system.globalVerbosity;
+            if (isCoverageEnabled()) {
+                verbosity = Verbosity.DEBUG; // Force debug verbosity for coverage
+            }
 
             let result = await this.system.bindings.runGetMethod({
                 verbosity: verbosity,
@@ -210,7 +214,6 @@ export class ContractExecutor {
                 args: stack || [],
                 config: this.system.config
             });
-
             if ((result as any).fail) {
                 return {
                     success: false,
@@ -224,6 +227,11 @@ export class ContractExecutor {
                     success: false,
                     error: result.output.error
                 };
+            }
+
+            // Report coverage
+            if (isCoverageEnabled()) {
+                reportCoverage(result.vmLogs);
             }
 
             // Parse result
@@ -246,6 +254,9 @@ export class ContractExecutor {
 
             // Resolve verbosity
             let verbosity = this.verbosity !== null ? this.verbosity : this.system.globalVerbosity;
+            if (isCoverageEnabled()) {
+                verbosity = Verbosity.DEBUG; // Force debug verbosity for coverage
+            }
 
             // Execute transaction
             let res = await this.system.bindings.transaction({
@@ -258,9 +269,13 @@ export class ContractExecutor {
                 lt: this.system.lt,
                 randomSeed: Buffer.alloc(32),
             });
-
             if ((res as any).fail) {
                 throw new Error((res as any).message);
+            }
+
+            // Report coverage
+            if (isCoverageEnabled()) {
+                reportCoverage(res.vmLogs);
             }
 
             // Apply changes
