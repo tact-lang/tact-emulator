@@ -9,6 +9,10 @@ export type TrackedTransaction = {
 export type TrackedEvent = {
     $type: 'deploy'
 } | {
+    $type: 'frozen'
+} | {
+    $type: 'deleted'
+} | {
     $type: 'received',
     message: TrackedMessage
 } | {
@@ -32,4 +36,7 @@ export type TrackedEvent = {
     message: TrackedMessage
 } | {
     $type: 'sent-bounced-failed'
+} | {
+    $type: 'storage-charged',
+    amount: string
 };

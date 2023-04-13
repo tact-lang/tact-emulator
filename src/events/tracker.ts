@@ -1,4 +1,4 @@
-import { Address, Cell, Message, Transaction } from "ton-core";
+import { Address, Cell, Message, Transaction, fromNano } from "ton-core";
 import { ContractSystem } from "../emulator/ContractSystem";
 import { TrackedEvent, TrackedTransaction } from "./events";
 import { TrackedBody, TrackedMessage } from './message';
@@ -40,6 +40,18 @@ export class Tracker {
         // Check if deployed
         if ((tx.oldStatus === 'non-existing' || tx.oldStatus === 'uninitialized') && tx.endStatus === 'active') {
             events.push({ $type: 'deploy' });
+        }
+
+        if (tx.description.storagePhase) {
+            if (tx.description.storagePhase.storageFeesCollected > 0n) {
+                events.push({ $type: 'storage-charged', amount: fromNano(tx.description.storagePhase.storageFeesCollected) });
+            }
+            if (tx.description.storagePhase.statusChange === 'frozen') {
+                events.push({ $type: 'frozen' });
+            }
+            if (tx.description.storagePhase.statusChange === 'deleted') {
+                events.push({ $type: 'deleted' });
+            }
         }
 
         // Incoming message
@@ -93,7 +105,7 @@ function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
             type: 'internal',
             from,
             to,
-            value: src.info.value.coins,
+            value: fromNano(src.info.value.coins),
             bounce: src.info.bounce,
             body: convertBody(src.body)
         }

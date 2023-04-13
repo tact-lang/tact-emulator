@@ -23,7 +23,7 @@ export type TrackedMessage = {
     type: 'internal',
     from: string,
     to: string,
-    value: bigint,
+    value: string,
     bounce: boolean,
     body: TrackedBody
 };

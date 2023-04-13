@@ -214,6 +214,7 @@ export class ContractSystem {
                 }
             }
         }
+        this.update({ now: this.now + 16 });
         return result;
     }
 

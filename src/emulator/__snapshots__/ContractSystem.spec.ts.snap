@@ -36,7 +36,7 @@ exports[`ContractSystem should send messages 1`] = `
             "from": "@treasure(treasure)",
             "to": "@unknown",
             "type": "internal",
-            "value": 1000000000n,
+            "value": "1",
           },
         ],
       },
@@ -56,7 +56,7 @@ exports[`ContractSystem should send messages 1`] = `
           "from": "@unknown",
           "to": "@treasure(treasure)",
           "type": "internal",
-          "value": 999000000n,
+          "value": "0.999",
         },
       },
       {
@@ -68,6 +68,10 @@ exports[`ContractSystem should send messages 1`] = `
   {
     "$seq": 2,
     "events": [
+      {
+        "$type": "storage-charged",
+        "amount": "0.000000002",
+      },
       {
         "$type": "received",
         "message": {
@@ -97,7 +101,7 @@ exports[`ContractSystem should send messages 1`] = `
             "from": "@treasure(treasure)",
             "to": "@unknown",
             "type": "internal",
-            "value": 1000000000n,
+            "value": "1",
           },
         ],
       },
@@ -117,7 +121,7 @@ exports[`ContractSystem should send messages 1`] = `
           "from": "@unknown",
           "to": "@treasure(treasure)",
           "type": "internal",
-          "value": 999000000n,
+          "value": "0.999",
         },
       },
       {
