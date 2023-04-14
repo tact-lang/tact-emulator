@@ -13,7 +13,7 @@ describe('EmulatorBindings', () => {
             .endCell();
         let bindings = new EmulatorBindings();
         let res = await bindings.runGetMethod({
-            verbosity: 0,
+            verbosity: 4,
             code,
             data,
             address: contractAddress(0, { code, data }),
@@ -61,7 +61,7 @@ describe('EmulatorBindings', () => {
         // ];
         let bindings = new EmulatorBindings();
         let res = await bindings.runGetMethod({
-            verbosity: 0,
+            verbosity: 3,
             address: Address.parseRaw('0:26f3f75674dac80f4bb469fb3bbf21860c4c7be7bf7597aa29fca2aae5c5130b'),
             code: Cell.fromBase64('te6cckECDgEAAjwAART/APSkE/S88sgLAQIBYgYCAgEgBAMATb3ejBOC52Hq6WVz2PQnYc6yVCjbNBOE7rGpaVsj5ZkWnXlv74sRzAElv11faiaGoA/DFAgIDrgACY7Z5AUARjD+AIvEhlbGxvIHdvcmxkIY/hQwgHv+IDB/8AJw8AJt/iAwAgLOCAcALUmYtHRydWWP4UMJqLVmYWxzZY/hQw4oA+tO2i7ftwIddJwh+VMCDXCx/eAtDTAwFxsMABkX+RcOIB+kAiUGZvBPhhApFb4CCCEJRqmLa6jzQw7UTQ1AH4YoEBAdcAATEB0x8BghCUapi2uvLggdM/ATHbPNs8yPhCAcwBAYEBAc8Aye1U4MAAkTDjDfLAgoDQoJANL5AYLwriSRJjCP72Y5wHANIQPkRNizNc3oL9whyHw7e8G531e6jkHtRNDUAfhigQEB1wABMf4Ai8SGVsbG8gd29ybGQhj+FDCAe/4gMH/wAnDwAm3+IDDI+EIBzAEBgQEBzwDJ7VTbMeABJPhBbyQQI18DfwJwgEJYbW3bPAsB9shxAcoBUAcBygBwAcoCUAXPFlAD+gJwAcpoI26zJW6zsY5MfwHKAMhwAcoAcAHKACRus51/AcoABCBu8tCAUATMljQDcAHKAOIkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDicAHKAAJ/AcoAAslYzJczMwFwAcoA4iFuswwAMJx/AcoAASBu8tCAAcyVMXABygDiyQH7AAAcyAGCEK/5D1dYyx/LP8lVcC6X'),
             data: Cell.fromBase64('te6cckECEQEAAmoAAUEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEABAQHAAgEFoMY/AwEU/wD0pBP0vPLICwQCAWIJBQIBIAcGAE293owTgudh6ullc9j0J2HOslQo2zQThO6xqWlbI+WZFp15b++LEcwBJb9dX2omhqAPwxQICA64AAmO2eQIAEYw/gCLxIZWxsbyB3b3JsZCGP4UMIB7/iAwf/ACcPACbf4gMAICzgsKAC1JmLR0cnVlj+FDCai1ZmFsc2WP4UMOKAPrTtou37cCHXScIflTAg1wsf3gLQ0wMBcbDAAZF/kXDiAfpAIlBmbwT4YQKRW+AgghCUapi2uo80MO1E0NQB+GKBAQHXAAExAdMfAYIQlGqYtrry4IHTPwEx2zzbPMj4QgHMAQGBAQHPAMntVODAAJEw4w3ywIKBANDADS+QGC8K4kkSYwj+9mOcBwDSED5ETYszXN6C/cIch8O3vBud9Xuo5B7UTQ1AH4YoEBAdcAATH+AIvEhlbGxvIHdvcmxkIY/hQwgHv+IDB/8AJw8AJt/iAwyPhCAcwBAYEBAc8Aye1U2zHgAST4QW8kECNfA38CcIBCWG1t2zwOAfbIcQHKAVAHAcoAcAHKAlAFzxZQA/oCcAHKaCNusyVus7GOTH8BygDIcAHKAHABygAkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDiJG6znX8BygAEIG7y0IBQBMyWNANwAcoA4nABygACfwHKAALJWMyXMzMBcAHKAOIhbrMPADCcfwHKAAEgbvLQgAHMlTFwAcoA4skB+wAAHMgBghCv+Q9XWMsfyz/JhKJ/gQ=='),

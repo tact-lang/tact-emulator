@@ -139,6 +139,7 @@ export class EmulatorBindings {
                     rand_seed: args.randomSeed.toString('hex'),
                     gas_limit: args.gasLimit.toString(),
                     method_id: args.methodId,
+                    debug_enabled: true
                 };
 
                 // Execute
@@ -147,7 +148,7 @@ export class EmulatorBindings {
                     [
                         JSON.stringify(params),
                         stack.toBoc().toString('base64'),
-                        args.config.toBoc().toString('base64')
+                        args.config.toBoc().toString('base64'),
                     ]
                 );
                 let resStr: string;
@@ -202,6 +203,7 @@ export class EmulatorBindings {
                     lt: args.lt.toString(),
                     rand_seed: args.randomSeed.toString('hex'),
                     ignore_chksig: false,
+                    debug_enabled: true
                 };
 
                 // Execute
@@ -211,7 +213,7 @@ export class EmulatorBindings {
                     args.verbosity,
                     args.shardAccount.toBoc().toString('base64'),
                     args.message.toBoc().toString('base64'),
-                    JSON.stringify(params)
+                    JSON.stringify(params),
                 ]);
                 let resStr: string;
                 try {
@@ -271,6 +273,8 @@ export class EmulatorBindings {
                 }
             });
             return module[name](...mappedArgs);
+        } catch (e) {
+            throw Error((e as any).message);
         } finally {
             allocatedPointers.forEach((pointer) => module._free(pointer));
         }

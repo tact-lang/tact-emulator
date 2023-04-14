@@ -198,7 +198,7 @@ export class ContractExecutor {
             // Resolve verbosity
             let verbosity = this.verbosity !== null ? this.verbosity : this.system.globalVerbosity;
             if (isCoverageEnabled()) {
-                verbosity = Verbosity.DEBUG; // Force debug verbosity for coverage
+                verbosity = Math.max(Verbosity.INFO, verbosity); // Force warning verbosity for coverage
             }
 
             let result = await this.system.bindings.runGetMethod({
@@ -255,7 +255,7 @@ export class ContractExecutor {
             // Resolve verbosity
             let verbosity = this.verbosity !== null ? this.verbosity : this.system.globalVerbosity;
             if (isCoverageEnabled()) {
-                verbosity = Verbosity.DEBUG; // Force debug verbosity for coverage
+                verbosity = Math.max(Verbosity.INFO, verbosity); // Force debug verbosity for coverage
             }
 
             // Execute transaction
