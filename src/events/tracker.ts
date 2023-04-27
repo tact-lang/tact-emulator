@@ -107,7 +107,7 @@ function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
             to,
             value: fromNano(src.info.value.coins),
             bounce: src.info.bounce,
-            body: convertBody(src.body, src.info.dest, system)
+            body: convertBody(src.body, [src.info.src, src.info.dest], system)
         }
     }
 
@@ -119,7 +119,7 @@ function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
         return {
             type: 'external-in',
             to: to,
-            body: convertBody(src.body, src.info.dest, system)
+            body: convertBody(src.body, [src.info.dest], system)
         };
     }
 
@@ -128,14 +128,14 @@ function convertMessage(src: Message, system: ContractSystem): TrackedMessage {
         return {
             type: 'external-out',
             to: src.info.dest ? src.info.dest.toString() : null,
-            body: convertBody(src.body, src.info.src, system)
+            body: convertBody(src.body, [src.info.src], system)
         };
     }
 
     throw Error('Invalid message object');
 }
 
-function convertBody(src: Cell, address: Address, system: ContractSystem): TrackedBody {
+function convertBody(src: Cell, address: Address[], system: ContractSystem): TrackedBody {
     let sc = src.beginParse();
 
     // Empty case
@@ -154,13 +154,15 @@ function convertBody(src: Cell, address: Address, system: ContractSystem): Track
         return { type: 'text', text: sc.loadStringTail() };
     }
 
-    // If knoen
-    let parsed = system.tryParseContractMessage(address, src);
-    if (parsed !== undefined) {
-        return {
-            type: 'known',
-            value: parsed
-        };
+    // If known
+    for (let a of address) {
+        let parsed = system.tryParseContractMessage(a, src);
+        if (parsed !== undefined) {
+            return {
+                type: 'known',
+                value: parsed
+            };
+        }
     }
 
     // Fallback
