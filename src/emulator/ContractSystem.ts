@@ -9,6 +9,7 @@ import { Maybe } from "../utils/maybe";
 import { testKey } from "../utils/testKey";
 import { ContractExecutor } from "./ContractExecutor";
 import { Verbosity } from "./Verbosity";
+import { TypeRegistry } from "ton-abi";
 
 /**
  * Contract system is a container for contracts that interact with each other
@@ -25,6 +26,7 @@ export class ContractSystem {
     #bindings: EmulatorBindings;
     #contracts: Map<string, ContractExecutor>;
     #abis: Map<string, ContractABI>;
+    #abiTypes: Map<string, TypeRegistry>;
     #pending: Message[] = [];
     #trackers = new Map<string, Tracker[]>();
     #loggers = new Map<string, Logger[]>();
@@ -84,6 +86,7 @@ export class ContractSystem {
         this.#bindings = new EmulatorBindings();
         this.#contracts = new Map();
         this.#abis = new Map();
+        this.#abiTypes = new Map();
     }
 
     /**
@@ -169,6 +172,21 @@ export class ContractSystem {
         // Register ABI
         if (src.abi) {
             this.#abis.set(src.address.toString({ testOnly: true }), src.abi);
+            let registry = new TypeRegistry();
+            try {
+                if (src.abi.types) {
+                    for (let i of src.abi.types) {
+                        try {
+                            registry.register(i);
+                        } catch (e) {
+                            // Ignore
+                        }
+                    }
+                }
+            } catch (e) {
+                // Ignore
+            }
+            this.#abiTypes.set(src.address.toString({ testOnly: true }), registry);
         }
 
         // Open contract
@@ -371,6 +389,19 @@ export class ContractSystem {
     //
     // Utility
     //
+
+    tryParseContractMessage(address: Address, src: Cell) {
+        try {
+            let b = this.#abiTypes.get(address.toString({ testOnly: true }));
+            if (!b) {
+                return undefined;
+            }
+            let sc = src.beginParse();
+            return b.parse(sc);
+        } catch (e) {
+            return undefined;
+        }
+    }
 
     getContractError(address: Address, code: number) {
         let b = this.#abis.get(address.toString({ testOnly: true }));

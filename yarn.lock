@@ -3960,6 +3960,11 @@ toidentifier@1.0.1:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
+ton-abi@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/ton-abi/-/ton-abi-0.0.1.tgz#3eafb92e84b7bad85b94ecf50095af4c4aa179f0"
+  integrity sha512-J166n7HdY6+3vtAGU/+cuY+OxjTgFLcMt95IBROLgT7SCVugaVLeDzxOAsPNd2w+l/omu6lsJh0LW82WHDHaQw==
+
 ton-core@>=0.48.0:
   version "0.48.0"
   resolved "https://registry.yarnpkg.com/ton-core/-/ton-core-0.48.0.tgz#df744c9b13b3193cb7eb8a9cbb715bcf0437e467"
