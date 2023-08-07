@@ -1,4 +1,4 @@
-import { ComputeSkipReason } from "ton-core";
+import { ComputeSkipReason } from "@ton/core";
 import { TrackedMessage } from "./message";
 
 export type TrackedTransaction = {

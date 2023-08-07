@@ -1,6 +1,6 @@
 import { ContractSystem } from "./ContractSystem";
 import { randomAddress } from "../utils/randomAddress";
-import { beginCell, toNano } from "ton-core";
+import { beginCell, toNano } from "@ton/core";
 
 describe('ContractSystem', () => {
     it('should send messages', async () => {

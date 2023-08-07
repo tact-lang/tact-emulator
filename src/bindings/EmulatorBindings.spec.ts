@@ -1,4 +1,4 @@
-import { Address, beginCell, Cell, contractAddress } from "ton-core";
+import { Address, beginCell, Cell, contractAddress } from "@ton/core";
 import { defaultConfig } from "../utils/defaultConfig";
 import { EmulatorBindings } from "./EmulatorBindings";
 

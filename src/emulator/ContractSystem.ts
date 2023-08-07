@@ -1,4 +1,4 @@
-import { Address, Cell, comment, ComputeError, Contract, ContractABI, ContractProvider, external, Message, openContract, toNano, Transaction } from "ton-core";
+import { Address, Cell, comment, ComputeError, Contract, ContractABI, ContractProvider, external, Message, openContract, toNano, Transaction } from "@ton/core";
 import { EmulatorBindings } from "../bindings/EmulatorBindings";
 import { Tracker } from "../events/tracker";
 import { Logger } from '../logger/logger';

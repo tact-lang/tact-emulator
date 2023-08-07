@@ -1,4 +1,4 @@
-import { Address, Cell, Message, Transaction, fromNano } from "ton-core";
+import { Address, Cell, Message, Transaction, fromNano } from "@ton/core";
 import { ContractSystem } from "../emulator/ContractSystem";
 import { TrackedEvent, TrackedTransaction } from "./events";
 import { TrackedBody, TrackedMessage } from './message';

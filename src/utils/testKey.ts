@@ -1,5 +1,5 @@
 import Prando from "prando";
-import { keyPairFromSeed } from "ton-crypto";
+import { keyPairFromSeed } from "@ton/crypto";
 
 export function testKey(seed: string) {
     let random = new Prando(seed);
