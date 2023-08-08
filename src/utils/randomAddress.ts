@@ -1,5 +1,5 @@
 import Prando from "prando";
-import { Address, ExternalAddress } from "ton-core";
+import { Address, ExternalAddress } from "@ton/core";
 
 export function randomAddress(seed: string, workchain: number = 0) {
     const random = new Prando(seed);

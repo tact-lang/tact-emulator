@@ -1,4 +1,4 @@
-import { Account, Address, Cell, contractAddress } from "ton-core";
+import { Account, Address, Cell, contractAddress } from "@ton/core";
 
 export function createAccount(args: { code: Cell, data: Cell, workchain?: number, address?: Address, balance?: bigint }): Account {
 

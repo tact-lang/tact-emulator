@@ -1,4 +1,4 @@
-import { Address, Contract } from "ton-core";
+import { Address, Contract } from "@ton/core";
 
 export type AddressSource = Address | Contract;
 

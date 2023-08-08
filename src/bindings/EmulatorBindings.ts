@@ -1,5 +1,5 @@
 import { AsyncLock } from "teslabot";
-import { Address, Cell, serializeTuple, TupleItem } from "ton-core";
+import { Address, Cell, serializeTuple, TupleItem } from "@ton/core";
 
 // WASM bindings
 const createModule: (options: any) => Promise<any> = require('./wasm/emulator-emscripten');

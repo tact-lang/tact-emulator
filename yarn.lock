@@ -742,6 +742,29 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
+"@ton/core@>=0.49.2":
+  version "0.49.2"
+  resolved "https://registry.yarnpkg.com/@ton/core/-/core-0.49.2.tgz#bb5f714f727cb98768d53bfb76b87133858e6bda"
+  integrity sha512-jzW7ZGNkkkv131uvgX/4JgHBdtEnanT8i1fnZ6NOL7lxXjlVIKTuAfr1J2wJQAGHn0wLrbceAHix3jKX+4F5CA==
+  dependencies:
+    symbol.inspect "1.0.1"
+
+"@ton/crypto-primitives@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@ton/crypto-primitives/-/crypto-primitives-2.0.0.tgz#446256146d64fcec6e3f21d9f40b5148640329cc"
+  integrity sha512-wttiNClmGbI6Dfy/8oyNnsIV0b/qYkCJz4Gn4eP62lJZzMtVQ94Ko7nikDX1EfYHkLI1xpOitWpW+8ZuG6XtDg==
+  dependencies:
+    jssha "3.2.0"
+
+"@ton/crypto@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@ton/crypto/-/crypto-3.2.0.tgz#8fcb36cc93eafd05249c847d1f4ad39cf2565e46"
+  integrity sha512-50RkwReEuV2FkxSZ8ht/x9+n0ZGtwRKGsJ0ay4I/HFhkYVG/awIIBQeH0W4j8d5lADdO5h01UtX8PJ8AjiejjA==
+  dependencies:
+    "@ton/crypto-primitives" "2.0.0"
+    jssha "3.2.0"
+    tweetnacl "1.0.3"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -3964,29 +3987,6 @@ ton-abi@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/ton-abi/-/ton-abi-0.0.1.tgz#3eafb92e84b7bad85b94ecf50095af4c4aa179f0"
   integrity sha512-J166n7HdY6+3vtAGU/+cuY+OxjTgFLcMt95IBROLgT7SCVugaVLeDzxOAsPNd2w+l/omu6lsJh0LW82WHDHaQw==
-
-ton-core@>=0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/ton-core/-/ton-core-0.48.0.tgz#df744c9b13b3193cb7eb8a9cbb715bcf0437e467"
-  integrity sha512-v3QL0CC8iQQ0cjUN0lI9hK7wEpLW2Wnm+N5Ukm+NSbtQ0vq36LGQR/BRywoOQZJm59XzmW4ATbtCWeas9ePrRA==
-  dependencies:
-    symbol.inspect "1.0.1"
-
-ton-crypto-primitives@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/ton-crypto-primitives/-/ton-crypto-primitives-2.0.0.tgz#e85cd68c0d523f6bdf3f306201a76e51b7e9312e"
-  integrity sha512-K+qKjpS0h9sPW6oExcpxnzuQ7nEgHEiDKwIqE/jWD25o8iFGe3FWj1gKxFNbKE9wwYKc5IV8FwrU+raF0KO5nQ==
-  dependencies:
-    jssha "3.2.0"
-
-ton-crypto@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/ton-crypto/-/ton-crypto-3.2.0.tgz#cf8cd5410d8f04b04b359f80415b11efb312c60e"
-  integrity sha512-fltdBNQ45gARMuGMEOjPZWPJ5eSql8p3CA0Dj7tPv5lhU5ziT8SxXLAzDraR9HJ8YpjBHLVvYyhMLRiEwxgtMQ==
-  dependencies:
-    jssha "3.2.0"
-    ton-crypto-primitives "2.0.0"
-    tweetnacl "1.0.3"
 
 tr46@~0.0.3:
   version "0.0.3"

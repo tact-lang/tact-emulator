@@ -1,4 +1,4 @@
-import { Address } from "ton-core";
+import { Address } from "@ton/core";
 import { ContractSystem } from "../emulator/ContractSystem";
 
 export class Logger {

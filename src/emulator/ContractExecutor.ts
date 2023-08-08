@@ -1,5 +1,5 @@
 import { AsyncLock } from "teslabot";
-import { Account, Address, beginCell, Cell, ContractState, loadShardAccount, loadTransaction, Message, parseTuple, storeMessage, storeShardAccount, TupleItem, TupleReader } from "ton-core";
+import { Account, Address, beginCell, Cell, ContractState, loadShardAccount, loadTransaction, Message, parseTuple, storeMessage, storeShardAccount, TupleItem, TupleReader } from "@ton/core";
 import { isCoverageEnabled, reportCoverage } from "../coverage/coverage";
 import { createAccount } from "../utils/createAccount";
 import { createEmptyAccount } from "../utils/createEmptyAccount";

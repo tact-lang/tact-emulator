@@ -1,4 +1,4 @@
-import { Account, Address } from "ton-core";
+import { Account, Address } from "@ton/core";
 
 export function createEmptyAccount(address: Address): Account {
     return {
