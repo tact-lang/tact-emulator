@@ -9,7 +9,7 @@ import { Maybe } from "../utils/maybe";
 import { testKey } from "../utils/testKey";
 import { ContractExecutor } from "./ContractExecutor";
 import { Verbosity } from "./Verbosity";
-import { TypeRegistry } from "ton-abi";
+import { TypeRegistry } from "@tact-lang/ton-abi";
 
 /**
  * Contract system is a container for contracts that interact with each other

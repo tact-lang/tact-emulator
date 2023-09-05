@@ -742,6 +742,11 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
+"@tact-lang/ton-abi@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@tact-lang/ton-abi/-/ton-abi-0.0.3.tgz#68aa8ecf8e14d91f37252773395753e4c623798e"
+  integrity sha512-n3ecmlwJiRI+4YKodc2/I3OsI14kYuxjPgFSWdNfr+GRMSZ76OvDIzq8Qr8k8iA3mSE+1RIplpluNnO9HCtgXg==
+
 "@ton/core@>=0.49.2":
   version "0.49.2"
   resolved "https://registry.yarnpkg.com/@ton/core/-/core-0.49.2.tgz#bb5f714f727cb98768d53bfb76b87133858e6bda"
@@ -3982,11 +3987,6 @@ toidentifier@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
-
-ton-abi@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/ton-abi/-/ton-abi-0.0.1.tgz#3eafb92e84b7bad85b94ecf50095af4c4aa179f0"
-  integrity sha512-J166n7HdY6+3vtAGU/+cuY+OxjTgFLcMt95IBROLgT7SCVugaVLeDzxOAsPNd2w+l/omu6lsJh0LW82WHDHaQw==
 
 tr46@~0.0.3:
   version "0.0.3"
