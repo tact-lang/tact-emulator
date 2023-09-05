@@ -1,6 +1,6 @@
 {
   "name": "@tact-lang/emulator",
-  "version": "4.2.2",
+  "version": "4.2.3",
   "main": "dist/index.js",
   "repository": "https://github.com/tact-lang/tact-emulator.git",
   "author": "Steve Korshakov <steve@korshakov.com>",
