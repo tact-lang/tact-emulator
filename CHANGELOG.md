@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.3.0] - 2024-06-09
+
 ### Changed 
 - Updated ton-abi version to @tact-lang npm organization package 
 - Updated wasm emulation library to release TON v2024.01
