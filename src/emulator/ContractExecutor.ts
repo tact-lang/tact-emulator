@@ -57,6 +57,7 @@ export class ContractExecutor {
     #index = 0;
     #verbosity: Verbosity | null = null;
     #name: string | null = null;
+    #libs: Cell | null = null;
 
     private constructor(state: Account, system: ContractSystem) {
         this.system = system;
@@ -167,10 +168,11 @@ export class ContractExecutor {
      * @param data contract data
      * @param balance contract balance
      */
-    override = (code: Cell, data: Cell, balance: bigint) => {
+    override = (code: Cell, data: Cell, balance: bigint, libs: Cell|null) => {
         this.#balance = balance;
         this.#state = createAccount({ code, data, address: this.address, balance });
         this.#last = { lt: 0n, hash: 0n };
+        this.#libs = libs;
     }
 
     get = async (method: string | number, stack?: Maybe<TupleItem[]>): Promise<GetMethodResult> => {
@@ -261,7 +263,7 @@ export class ContractExecutor {
             // Execute transaction
             let res = await this.system.bindings.transaction({
                 config: this.system.config,
-                libs: null,
+                libs: this.#libs,
                 verbosity: verbosity,
                 shardAccount: beginCell().store(storeShardAccount({ account: this.#state, lastTransactionHash: this.#last.hash, lastTransactionLt: this.#last.lt })).endCell(),
                 message: beginCell().store(storeMessage(msg)).endCell(),
