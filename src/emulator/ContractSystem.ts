@@ -118,8 +118,8 @@ export class ContractSystem {
      * @param data 
      * @param balance
      */
-    override(address: Address, code: Cell, data: Cell, balance: bigint) {
-        this.contract(address).override(code, data, balance);
+    override(address: Address, code: Cell, data: Cell, balance: bigint, lib:Cell) {
+        this.contract(address).override(code, data, balance, lib);
     }
 
     /**
